@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 
+// 첫 시작화면 배경화면
 public class Common_Back implements Serializable {
 	ImageIcon image;
 	JScrollPane s_pane;
