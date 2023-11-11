@@ -6,7 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-
+// 시작화면
 public class First_Scene extends JFrame {
 	ImageIcon image;
 	JScrollPane s_pane;
