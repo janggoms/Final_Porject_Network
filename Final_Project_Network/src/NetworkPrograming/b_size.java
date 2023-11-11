@@ -12,6 +12,8 @@ public class b_size extends JFrame {
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
+		
+//		setBounds(200, 300, 500, 300);
 	}
 
 }
