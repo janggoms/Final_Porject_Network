@@ -1,6 +1,6 @@
 package NetworkPrograming;
 
-
+// 하기싫어
 import javax.swing.JFrame;
 
 
