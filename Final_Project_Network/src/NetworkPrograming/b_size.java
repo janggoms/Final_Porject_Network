@@ -1,6 +1,9 @@
 package NetworkPrograming;
 
+
 // 하기싫어
+// 드디어 해결??
+// 제발
 import javax.swing.JFrame;
 
 
@@ -12,8 +15,8 @@ public class b_size extends JFrame {
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
-		
-//		setBounds(200, 300, 500, 300);
+
+		// setBounds(200, 300, 500, 300);
 	}
 
 }
