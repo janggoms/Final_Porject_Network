@@ -30,10 +30,10 @@ public class First_Scene extends JFrame {
 	}
 
 
-//	private JPanel createInputPanel() {
-//		return null;
-//
-//	}
+	private JPanel createInputPanel() {
+		return null;
+
+	}
 
 
 	public static void main(String[] args) {
