@@ -18,13 +18,14 @@ import javax.swing.JPanel;
 
 
 // 시작화면
-public class First_Scene extends JFrame {
+public class StartUI extends JFrame {
 
-	public First_Scene() {
+	public StartUI() {
 		setLayout(null);
 
-		JLabel title = new JLabel("캐치 워드");
+		JLabel title = new JLabel("캐치워드");
 		title.setBounds(390, 200, 300, 100);
+		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setForeground(Color.WHITE);
 
 		Font labelFont = title.getFont();
@@ -32,15 +33,15 @@ public class First_Scene extends JFrame {
 		add(title);
 
 		ImagePanel backgroundPanel = new ImagePanel("/NetworkPrograming/Pic/ocean.jpg");
-		backgroundPanel.setSize(new Dimension(1000, 700));
+		backgroundPanel.setSize(new Dimension(1100, 700));
 		add(backgroundPanel);
 
 		JButton s_Button = new JButton("시작하기");
-		s_Button.setBounds(440, 550, 100, 35);
+		s_Button.setBounds(488, 550, 100, 35);
 		add(s_Button);
 
 		setTitle("캐치 워드");
-		setSize(1000, 700);
+		setSize(1100, 700);
 		setLocationRelativeTo(null);
 		setResizable(false);
 
@@ -49,7 +50,6 @@ public class First_Scene extends JFrame {
 	}
 
 
-	// Custom JPanel to display an image
 	class ImagePanel extends JPanel {
 		private ImageIcon imageIcon;
 
@@ -68,7 +68,7 @@ public class First_Scene extends JFrame {
 
 
 	public static void main(String[] args) {
-		new First_Scene();
+		new StartUI();
 	}
 
 }
