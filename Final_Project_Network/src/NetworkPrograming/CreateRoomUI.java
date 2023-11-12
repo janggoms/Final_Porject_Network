@@ -15,7 +15,7 @@ import javax.swing.border.LineBorder;
 
 
 public class CreateRoomUI extends JFrame {
-	private JButton c_room, e_room;
+	private JButton c_room, e_room, g_turns;
 	private JLabel label;
 	private JTextArea createdRoom;
 	private JTextField roomName;
@@ -103,6 +103,26 @@ public class CreateRoomUI extends JFrame {
 		label = new JLabel("고개회수");
 		label.setBounds(35, 300, 100, 50);
 		second.add(label);
+
+		g_turns = new JButton("5");
+		g_turns.setBounds(35, 350, 50, 50);
+		second.add(g_turns);
+
+		g_turns = new JButton("7");
+		g_turns.setBounds(85, 350, 50, 50);
+		second.add(g_turns);
+
+		g_turns = new JButton("10");
+		g_turns.setBounds(135, 350, 50, 50);
+		second.add(g_turns);
+
+		g_turns = new JButton("15");
+		g_turns.setBounds(185, 350, 50, 50);
+		second.add(g_turns);
+
+		g_turns = new JButton("20");
+		g_turns.setBounds(235, 350, 50, 50);
+		second.add(g_turns);
 
 		c_room = new JButton("생성");
 		c_room.setBounds(228, 633, 100, 30);
