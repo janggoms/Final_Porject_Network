@@ -15,10 +15,12 @@ import javax.swing.border.LineBorder;
 
 
 public class CreateRoomUI extends JFrame {
-	private JButton c_room, e_room, g_turns;
-	private JLabel label;
-	private JTextArea createdRoom;
-	private JTextField roomName;
+	private JButton c_room; // 방생성
+	private JButton e_room; // 방입장
+	private JButton g_turns; // 고개횟수
+	private JLabel label; // 표시
+	private JTextArea createdRoom; //
+	private JTextField roomName; // 방생성 입력란
 
 
 	public CreateRoomUI() {
