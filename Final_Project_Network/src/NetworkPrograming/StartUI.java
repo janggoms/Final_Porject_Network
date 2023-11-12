@@ -18,9 +18,9 @@ import javax.swing.JPanel;
 
 
 // 시작화면
-public class First_Scene extends JFrame {
+public class StartUI extends JFrame {
 
-	public First_Scene() {
+	public StartUI() {
 		setLayout(null);
 
 		JLabel title = new JLabel("캐치 워드");
@@ -68,7 +68,7 @@ public class First_Scene extends JFrame {
 
 
 	public static void main(String[] args) {
-		new First_Scene();
+		new StartUI();
 	}
 
 }
