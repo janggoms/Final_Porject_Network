@@ -9,7 +9,6 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
@@ -19,7 +18,6 @@ public class CreateRoomUI extends JFrame {
 	private JButton e_room; // 방입장
 	private JButton g_turns; // 고개횟수
 	private JLabel label; // 표시
-	private JTextArea createdRoom; //
 	private JTextField roomName; // 방생성 입력란
 
 

@@ -33,7 +33,7 @@ public class StartUI extends JFrame {
 		add(title);
 
 		ImagePanel backgroundPanel = new ImagePanel("/NetworkPrograming/Pic/ocean.jpg");
-		backgroundPanel.setSize(new Dimension(1100, 700));
+		backgroundPanel.setSize(new Dimension(1000, 700));
 		add(backgroundPanel);
 
 		JButton s_Button = new JButton("시작하기");
@@ -41,7 +41,7 @@ public class StartUI extends JFrame {
 		add(s_Button);
 
 		setTitle("캐치 워드");
-		setSize(1100, 700);
+		setSize(1000, 700);
 		setLocationRelativeTo(null);
 		setResizable(false);
 
