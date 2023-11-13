@@ -38,6 +38,7 @@ public class GameUI extends JFrame {
 		setLayout(new GridBagLayout());
 
 		buildGUI();
+
 		setVisible(true);
 	}
 
