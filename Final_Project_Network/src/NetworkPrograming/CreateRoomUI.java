@@ -4,6 +4,8 @@ package NetworkPrograming;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -64,71 +66,89 @@ public class CreateRoomUI extends JFrame {
 
 	// 방 입장 화면
 	private JPanel firstDisplay() {
-		JPanel first = new JPanel();
+		JPanel p = new JPanel();
 
-		first.setLayout(null);
+		p.setLayout(null);
 
 		label = new JLabel("현재 생성된 방");
 		label.setBounds(100, 10, 100, 50);
-		first.add(label);
+		p.add(label);
 
 		e_room = new JButton("방 1");
+		e_room.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				GameUI T_Frame = new GameUI();
+				T_Frame.setVisible(true);
+				dispose(); // 현재의 프레임을 닫습니다.
+			}
+		});
+
 		e_room.setBounds(100, 100, 500, 75);
-		first.add(e_room);
+		p.add(e_room);
 
 		// Font font = label.getFont();
 		// first.setFont(new Font(font.getName(), Font.PLAIN, 40));
 
-		return first;
+		return p;
 	}
 
 
 	// 방 생성 화면
 	private JPanel secondDisplay() {
-		JPanel second = new JPanel();
-		second.setLayout(null);
+		JPanel p = new JPanel();
+		p.setLayout(null);
 
 		label = new JLabel("방생성하기");
 		label.setBounds(30, 10, 100, 50);
-		second.add(label);
+		p.add(label);
 
 		label = new JLabel("방이름");
 		label.setBounds(35, 200, 100, 50);
-		second.add(label);
+		p.add(label);
 
 		roomName = new JTextField(30);
 		roomName.setBounds(25, 250, 250, 30);
-		second.add(roomName);
+		p.add(roomName);
 
 		label = new JLabel("고개회수");
 		label.setBounds(35, 300, 100, 50);
-		second.add(label);
+		p.add(label);
 
 		g_turns = new JButton("5");
 		g_turns.setBounds(35, 350, 50, 50);
-		second.add(g_turns);
+		p.add(g_turns);
 
 		g_turns = new JButton("7");
 		g_turns.setBounds(85, 350, 50, 50);
-		second.add(g_turns);
+		p.add(g_turns);
 
 		g_turns = new JButton("10");
 		g_turns.setBounds(135, 350, 50, 50);
-		second.add(g_turns);
+		p.add(g_turns);
 
 		g_turns = new JButton("15");
 		g_turns.setBounds(185, 350, 50, 50);
-		second.add(g_turns);
+		p.add(g_turns);
 
 		g_turns = new JButton("20");
 		g_turns.setBounds(235, 350, 50, 50);
-		second.add(g_turns);
+		p.add(g_turns);
 
 		c_room = new JButton("생성");
-		c_room.setBounds(228, 633, 100, 30);
-		second.add(c_room);
+		c_room.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				GameUI secondFrame = new GameUI();
+				secondFrame.setVisible(true);
+				dispose(); // 현재의 프레임을 닫습니다.
+			}
+		});
 
-		return second;
+		c_room.setBounds(228, 633, 100, 30);
+		p.add(c_room);
+
+		return p;
 	}
 
 
