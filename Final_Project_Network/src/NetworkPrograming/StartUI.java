@@ -37,7 +37,7 @@ public class StartUI extends JFrame {
 		add(backgroundPanel);
 
 		JButton s_Button = new JButton("시작하기");
-		s_Button.setBounds(488, 550, 100, 35);
+		s_Button.setBounds(458, 400, 150, 50);
 		add(s_Button);
 
 		setTitle("캐치 워드");

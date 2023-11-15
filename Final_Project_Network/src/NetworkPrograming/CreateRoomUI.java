@@ -2,6 +2,7 @@ package NetworkPrograming;
 
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
@@ -22,7 +23,7 @@ public class CreateRoomUI extends JFrame {
 
 
 	public CreateRoomUI() {
-		setTitle("캐치 워드");
+		setTitle("네프 방생성 화면 구성");
 		setSize(1000, 700);
 
 		setLocationRelativeTo(null);
@@ -70,14 +71,17 @@ public class CreateRoomUI extends JFrame {
 
 		label = new JLabel("현재 생성된 방");
 		label.setBounds(100, 10, 100, 50);
+		
+//		Font font = label.getFont();
+//		first.setFont(new Font(font.getName(), Font.PLAIN, 50));
+		 
 		first.add(label);
+		
 
 		e_room = new JButton("방 1");
 		e_room.setBounds(100, 100, 500, 75);
 		first.add(e_room);
 
-		// Font font = label.getFont();
-		// first.setFont(new Font(font.getName(), Font.PLAIN, 40));
 
 		return first;
 	}

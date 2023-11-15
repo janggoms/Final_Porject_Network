@@ -2,6 +2,7 @@ package NetworkPrograming;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -70,6 +71,9 @@ public class GameOverUI extends JFrame {
         userOutDisplay = new JTextArea();
         JButton b_restart = new JButton("재시작하기");
         JButton b_exit = new JButton("종료하기");
+        
+        b_restart.setPreferredSize(new Dimension(b_restart.getPreferredSize().width, 60));
+        b_exit.setPreferredSize(new Dimension(b_exit.getPreferredSize().width, 60));
         
         second.add(new JScrollPane(userOutDisplay), BorderLayout.CENTER);
         JPanel button2 = new JPanel(new GridLayout(2,0));

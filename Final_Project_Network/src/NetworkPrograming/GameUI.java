@@ -3,6 +3,7 @@ package NetworkPrograming;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
@@ -135,6 +136,8 @@ public class GameUI extends JFrame {
 
 		t_Input = new JTextField(18);
 		JButton b_send = new JButton("보내기");
+		
+		b_send.setPreferredSize(new Dimension(b_send.getPreferredSize().width, 40));
 
 		p.add(t_Input, BorderLayout.CENTER);
 		p.add(b_send, BorderLayout.EAST);
