@@ -1,12 +1,16 @@
-package NetworkPrograming;
+// 로고, 질문 횟수. 타이머 삽입 완료 - 현혜
 
+package NetworkPrograming;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -14,7 +18,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 
@@ -26,6 +33,10 @@ public class GameUI extends JFrame {
 	private JTextField t_Input;
 	private JLabel labelAnswerLogo;
 	private JTextArea t_userAnswerDisplay;
+	
+	   private JLabel timerLabel;
+	   private Timer timer;
+	   private int count = 30; // 초기 카운트 값
 
 
 	public GameUI() {
@@ -70,23 +81,37 @@ public class GameUI extends JFrame {
 		gbc.gridy = 0;
 		gbc.weightx = 1;
 		add(thirdDisplay, gbc);
+
 	}
-
-
-	// (1) 로고와 유저입장 정보가 뜨는 왼쪽 화면
+	
 	private JPanel first_Display() {
-		JPanel first = new JPanel();
-		first.setLayout(new BorderLayout());
+	    JPanel first = new JPanel();
+	    first.setLayout(new BorderLayout());
 
-		labelLogo = new JLabel("로고");
-		first.add(labelLogo, BorderLayout.NORTH);
+	    ImagePanel labelLogo = new ImagePanel("/NetworkPrograming/Pic/CW_logo.png");
+	    labelLogo.setPreferredSize(new Dimension(150, 110)); // 이미지 크기 조절
+	    first.add(labelLogo, BorderLayout.NORTH);
 
-		JPanel userInfoPanel = user_Info_Display();
-		first.add(userInfoPanel, BorderLayout.CENTER);
+	    JPanel userInfoPanel = user_Info_Display();
+	    first.add(userInfoPanel, BorderLayout.CENTER);
 
-		return first;
+	    return first;
 	}
 
+	
+	class ImagePanel extends JPanel {
+	    private ImageIcon imageIcon;
+
+	    public ImagePanel(String imagePath) {
+	        imageIcon = new ImageIcon(getClass().getResource(imagePath));
+	    }
+
+	    @Override
+	    protected void paintComponent(Graphics g) {
+	        super.paintComponent(g);
+	        g.drawImage(imageIcon.getImage(), 0, 0, getWidth(), getHeight(), this);
+	    }
+	}
 
 	// (1)_1 유저 입장정보 출력되는 공간 지정
 	private JPanel user_Info_Display() {
@@ -106,8 +131,8 @@ public class GameUI extends JFrame {
 		JPanel second = new JPanel();
 		second.setLayout(new BorderLayout());
 
-		labelLogo = new JLabel("시간제한 바 or 질문 횟수");
-		second.add(labelLogo, BorderLayout.NORTH);
+		JPanel timer = updateTimer();
+		second.add(timer, BorderLayout.NORTH);
 
 		JPanel mainQuestionPanel = main_Question_Display();
 		second.add(mainQuestionPanel, BorderLayout.CENTER);
@@ -117,7 +142,40 @@ public class GameUI extends JFrame {
 
 		return second;
 	}
+	
+	
+	private JPanel updateTimer() {
+    JPanel p = new JPanel(new BorderLayout());
+    
+    JLabel remainingCounts = new JLabel("남은 횟수: ");
+    remainingCounts.setFont(new Font("NamunGothic", Font.BOLD, 20));
 
+    JLabel timerLabel = new JLabel();
+    timerLabel.setFont(new Font("Arial", Font.PLAIN, 30));
+    timerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+    timerLabel.setText(Integer.toString(count));
+
+    timer = new Timer(1000, e -> {
+        if (--count > 0) {
+            timerLabel.setText(Integer.toString(count));
+        } else {
+            timer.stop();
+            timerLabel.setText("Next Question");
+        }
+    });
+
+    timer.start();
+    
+    remainingCounts.setBorder(new EmptyBorder(0, 10, 0, 0)); // 오른쪽 여백
+    timerLabel.setBorder(new EmptyBorder(0, 0, 0, 50)); // 왼쪽 여백
+    
+    p.add(remainingCounts, BorderLayout.WEST);
+    p.add(timerLabel, BorderLayout.EAST);
+
+    return p;
+}
+	
 
 	// (2)_1 질문들이 출력되는 공간 지정
 	private JPanel main_Question_Display() {
@@ -152,6 +210,8 @@ public class GameUI extends JFrame {
 		third.setLayout(new BorderLayout());
 
 		labelAnswerLogo = new JLabel("정답 정보");
+		labelAnswerLogo.setFont(new Font("NamunGothic", Font.ITALIC, 30));
+		labelAnswerLogo.setHorizontalAlignment(SwingConstants.CENTER);
 		third.add(labelAnswerLogo, BorderLayout.NORTH);
 
 		JPanel userAnswerPanel = user_answer_Display();
