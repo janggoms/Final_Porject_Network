@@ -3,7 +3,6 @@ package NetworkPrograming;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,7 +10,6 @@ import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 //setLocation((int)((dmen.width - getSize().width)/2), 
@@ -24,22 +22,7 @@ public class StartUI extends JFrame {
 
 	public StartUI() {
 		setLayout(null);
-
-		JLabel title = new JLabel("캐치워드");
-		title.setBounds(330, 175, 300, 100);
-		title.setBackground(new Color(0, 0, 0));
-		title.setHorizontalAlignment(JLabel.CENTER);
-		title.setForeground(Color.WHITE);
-
-		Font buttonFont = title.getFont();
-		title.setFont(new Font(buttonFont.getName(), Font.BOLD, 20));
-
-		Font labelFont = title.getFont();
-		title.setFont(new Font(labelFont.getName(), Font.BOLD, 65));
-		add(title);
-
-		// 추후에 다시 만들 예정
-		ImagePanel backgroundPanel = new ImagePanel("/NetworkPrograming/Pic/CW_logo.png");
+		ImagePanel backgroundPanel = new ImagePanel("/NetworkPrograming/Pic/sky.png");
 		backgroundPanel.setSize(new Dimension(1000, 700));
 		add(backgroundPanel);
 
