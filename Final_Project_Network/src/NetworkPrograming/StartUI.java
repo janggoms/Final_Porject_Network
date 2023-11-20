@@ -26,23 +26,25 @@ public class StartUI extends JFrame {
 		setLayout(null);
 
 		JLabel title = new JLabel("캐치워드");
-		title.setBounds(390, 200, 300, 100);
+		title.setBounds(330, 175, 300, 100);
+		title.setBackground(new Color(0, 0, 0));
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setForeground(Color.WHITE);
-		
+
 		Font buttonFont = title.getFont();
 		title.setFont(new Font(buttonFont.getName(), Font.BOLD, 20));
 
 		Font labelFont = title.getFont();
-		title.setFont(new Font(labelFont.getName(), Font.PLAIN, 50));
+		title.setFont(new Font(labelFont.getName(), Font.BOLD, 65));
 		add(title);
 
-		ImagePanel backgroundPanel = new ImagePanel("/NetworkPrograming/Pic/ocean.jpg");
+		// 추후에 다시 만들 예정
+		ImagePanel backgroundPanel = new ImagePanel("/NetworkPrograming/Pic/CW_logo.png");
 		backgroundPanel.setSize(new Dimension(1000, 700));
 		add(backgroundPanel);
 
 		JButton s_Button = new JButton("시작하기");
-		s_Button.setBounds(458, 400, 150, 50);
+		s_Button.setBounds(400, 425, 150, 75);
 		s_Button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -51,7 +53,8 @@ public class StartUI extends JFrame {
 				dispose(); // 현재의 프레임을 닫습니다.
 			}
 		});
-		s_Button.setBounds(488, 550, 100, 35);
+		s_Button.setForeground(new Color(255, 255, 255));
+		s_Button.setBackground(new Color(30, 144, 255));
 		add(s_Button);
 
 		setTitle("캐치 워드");

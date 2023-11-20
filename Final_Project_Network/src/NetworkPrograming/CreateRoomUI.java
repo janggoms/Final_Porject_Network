@@ -2,6 +2,7 @@ package NetworkPrograming;
 
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -71,15 +72,9 @@ public class CreateRoomUI extends JFrame {
 		p.setLayout(null);
 
 		label = new JLabel("현재 생성된 방");
-		label.setBounds(100, 10, 100, 50);
-		
-//		Font font = label.getFont();
-//		first.setFont(new Font(font.getName(), Font.PLAIN, 50));
-		 
-//		first.add(label);
-		
+		label.setBounds(100, 10, 200, 100);
+		label.setFont(new Font("굴림", Font.BOLD, 25));
 		p.add(label);
-
 
 		e_room = new JButton("방 1");
 		e_room.addActionListener(new ActionListener() {
@@ -94,7 +89,6 @@ public class CreateRoomUI extends JFrame {
 		e_room.setBounds(100, 100, 500, 75);
 		p.add(e_room);
 
-
 		return p;
 	}
 
@@ -105,7 +99,8 @@ public class CreateRoomUI extends JFrame {
 		p.setLayout(null);
 
 		label = new JLabel("방생성하기");
-		label.setBounds(30, 10, 100, 50);
+		label.setBounds(30, 10, 200, 100);
+		label.setFont(new Font("굴림", Font.BOLD, 25));
 		p.add(label);
 
 		label = new JLabel("방이름");
@@ -113,31 +108,31 @@ public class CreateRoomUI extends JFrame {
 		p.add(label);
 
 		roomName = new JTextField(30);
-		roomName.setBounds(25, 250, 250, 30);
+		roomName.setBounds(35, 250, 250, 30);
 		p.add(roomName);
 
 		label = new JLabel("고개회수");
-		label.setBounds(35, 300, 100, 50);
+		label.setBounds(35, 330, 100, 50);
 		p.add(label);
 
 		g_turns = new JButton("5");
-		g_turns.setBounds(35, 350, 50, 50);
+		g_turns.setBounds(35, 390, 50, 50);
 		p.add(g_turns);
 
 		g_turns = new JButton("7");
-		g_turns.setBounds(85, 350, 50, 50);
+		g_turns.setBounds(85, 390, 50, 50);
 		p.add(g_turns);
 
 		g_turns = new JButton("10");
-		g_turns.setBounds(135, 350, 50, 50);
+		g_turns.setBounds(135, 390, 50, 50);
 		p.add(g_turns);
 
 		g_turns = new JButton("15");
-		g_turns.setBounds(185, 350, 50, 50);
+		g_turns.setBounds(185, 390, 50, 50);
 		p.add(g_turns);
 
 		g_turns = new JButton("20");
-		g_turns.setBounds(235, 350, 50, 50);
+		g_turns.setBounds(235, 390, 50, 50);
 		p.add(g_turns);
 
 		c_room = new JButton("생성");
