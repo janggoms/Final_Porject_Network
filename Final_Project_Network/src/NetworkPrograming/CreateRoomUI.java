@@ -7,6 +7,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -22,6 +24,7 @@ public class CreateRoomUI extends JFrame {
 	private JButton g_turns; // 고개횟수
 	private JLabel label; // 표시
 	private JTextField roomName; // 방생성 입력란
+	private List<Room> rooms; // 방생성 순서
 
 
 	public CreateRoomUI() {
@@ -34,7 +37,6 @@ public class CreateRoomUI extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		setLayout(new GridBagLayout());
-
 		buildGUI();
 		setVisible(true);
 	}
@@ -42,6 +44,8 @@ public class CreateRoomUI extends JFrame {
 
 	private void buildGUI() {
 		GridBagConstraints gbc = new GridBagConstraints();
+
+		rooms = new ArrayList<>();
 
 		JPanel first = firstDisplay();
 		first.setBorder(new LineBorder(Color.black));
@@ -76,18 +80,21 @@ public class CreateRoomUI extends JFrame {
 		label.setFont(new Font("굴림", Font.BOLD, 25));
 		p.add(label);
 
-		e_room = new JButton("방 1");
-		e_room.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				GamePlayer T_Frame = new GamePlayer();
-				T_Frame.setVisible(true);
-				dispose(); // 현재의 프레임을 닫습니다.
-			}
-		});
+		for (Room room : rooms) {
+			JButton roomButton = new JButton(room.getRoomName());
+			roomButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					GamePlayer T_Frame = new GamePlayer();
+					T_Frame.setVisible(true);
+					dispose(); // 현재의 프레임을 닫습니다.
+				}
+			});
 
-		e_room.setBounds(100, 100, 500, 75);
-		p.add(e_room);
+			e_room.setBounds(100, 100, 500, 75);
+			p.add(e_room);
+
+		}
 
 		return p;
 	}
@@ -142,6 +149,8 @@ public class CreateRoomUI extends JFrame {
 				GameHost secondFrame = new GameHost();
 				secondFrame.setVisible(true);
 				dispose(); // 현재의 프레임을 닫습니다.
+				Room newRoom = new Room();
+				rooms.add(newRoom);
 			}
 		});
 
@@ -149,6 +158,23 @@ public class CreateRoomUI extends JFrame {
 		p.add(c_room);
 
 		return p;
+	}
+
+
+	class Room {
+		private static int roomCount = 0;
+		private String roomName;
+
+
+		public Room() {
+			roomCount++;
+			this.roomName = "방 " + roomCount;
+		}
+
+
+		public String getRoomName() {
+			return roomName;
+		}
 	}
 
 
