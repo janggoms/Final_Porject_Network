@@ -24,23 +24,23 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 
 public class GameHost extends JFrame {
 
-	private JLabel labelLogo, labelAnswerLogo, timerLabel, remainingCounts;
+	private JLabel labelLogo, labelAnswerLogo, timerLabel, remainingTurns;
 	private JTextArea userInfoDisplay, t_questionDisplay, t_userAnswerDisplay, rulesTextArea;
-	private JTextField t_Input;
 	private JButton b_send, s_button;
 
+	private JTextField t_Input;
 	private Timer timer;
-	private int count = 30; // 초기 카운트 값
+	private String selectedCheckbox;
 	private JScrollPane scrollPane;
-	private boolean showRules = true;
 
+	private int count = 30; // 초기 카운트 값
 	private int userCount = 0;
+	private boolean showRules = true;
 
 
 	public GameHost() {
@@ -137,40 +137,6 @@ public class GameHost extends JFrame {
 	}
 
 
-	private JPanel updateTimer() {
-		JPanel p = new JPanel(new BorderLayout());
-
-		remainingCounts = new JLabel("남은 횟수: ");
-		remainingCounts.setFont(new Font("NamunGothic", Font.BOLD, 20));
-
-		timerLabel = new JLabel();
-		timerLabel.setFont(new Font("Arial", Font.PLAIN, 30));
-		timerLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-		timerLabel.setText(Integer.toString(count));
-
-		timer = new Timer(1000, e -> {
-			if (--count > 0) {
-				timerLabel.setText(Integer.toString(count));
-			} else {
-				timer.stop();
-				timerLabel.setText("Next Hint");
-			}
-
-		});
-
-		timer.start();
-
-		remainingCounts.setBorder(new EmptyBorder(0, 10, 0, 0)); // 오른쪽 여백
-		timerLabel.setBorder(new EmptyBorder(0, 0, 0, 50)); // 왼쪽 여백
-
-		p.add(remainingCounts, BorderLayout.WEST);
-		p.add(timerLabel, BorderLayout.EAST);
-
-		return p;
-	}
-
-
 	// (2)_1 질문들이 출력되는 공간 지정
 	private JPanel main_Question_Display() {
 		JPanel p = new JPanel(new BorderLayout());
@@ -260,6 +226,45 @@ public class GameHost extends JFrame {
 		p.add(new JScrollPane(t_userAnswerDisplay), BorderLayout.CENTER);
 
 		return p;
+	}
+
+
+	private JPanel updateTimer() {
+		JPanel p = new JPanel(new BorderLayout());
+
+		remainingTurns = new JLabel("남은 횟수: ");
+		remainingTurns.setBounds(30, 100, 200, 50);
+		remainingTurns.setFont(new Font("고딕", Font.PLAIN, 20));
+		add(remainingTurns);
+
+		JLabel timerLabel = new JLabel();
+		timerLabel.setFont(new Font("Arial", Font.PLAIN, 30));
+		timerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+		timerLabel.setText(Integer.toString(count));
+
+		timer = new Timer(1000, e -> {
+			if (--count > 0) {
+				timerLabel.setText(Integer.toString(count));
+			} else {
+				timer.stop();
+				timerLabel.setText("Next Question");
+			}
+
+		});
+
+		timer.start();
+
+		p.add(remainingTurns, BorderLayout.WEST);
+		p.add(timerLabel, BorderLayout.EAST);
+
+		return p;
+	}
+
+
+	public void setRemainingTurns(String value) {
+		selectedCheckbox = value;
+		remainingTurns.setText("남은 횟수: " + selectedCheckbox);
 	}
 
 

@@ -22,11 +22,9 @@ public class CreateRoomUI extends JFrame {
 
 	public String remainingTurns;
 
-	private JButton c_room; // 방생성
-	private JButton e_room; // 방입장
+	private JButton c_room, e_room; // 방생성, 방입장
 	private JLabel label; // 표시
 	private JTextField roomName; // 방생성 입력란
-
 	private String[] names = { " 5", " 7", "10", "15", "20" };
 
 
