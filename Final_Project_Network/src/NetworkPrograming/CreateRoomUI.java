@@ -1,6 +1,5 @@
 package NetworkPrograming;
 
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -8,7 +7,9 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -17,12 +18,20 @@ import javax.swing.border.LineBorder;
 
 
 public class CreateRoomUI extends JFrame {
+	
+    public String remainingTurns;
+	
 	private JButton c_room; // 방생성
 	private JButton e_room; // 방입장
-	private JButton g_turns; // 고개횟수
 	private JLabel label; // 표시
 	private JTextField roomName; // 방생성 입력란
+<<<<<<< HEAD
 
+=======
+	
+	private String [] names = {" 5", " 7", "10", "15", "20"};
+	
+>>>>>>> branch 'main' of https://github.com/janggoms/Final_Porject_Network.git
 
 	public CreateRoomUI() {
 		setTitle("네프 방생성 화면 구성");
@@ -92,9 +101,9 @@ public class CreateRoomUI extends JFrame {
 		return p;
 	}
 
-
-	// 방 생성 화면
+	
 	private JPanel secondDisplay() {
+		
 		JPanel p = new JPanel();
 		p.setLayout(null);
 
@@ -104,38 +113,34 @@ public class CreateRoomUI extends JFrame {
 		p.add(label);
 
 		label = new JLabel("방이름");
-		label.setBounds(35, 200, 100, 50);
+		label.setBounds(35, 100, 100, 50);
+        label.setFont(new Font("고딕", Font.PLAIN, 20));
 		p.add(label);
 
 		roomName = new JTextField(30);
-		roomName.setBounds(35, 250, 250, 30);
+		roomName.setBounds(35, 150, 250, 30);
 		p.add(roomName);
 
-		label = new JLabel("고개회수");
-		label.setBounds(35, 330, 100, 50);
+		label = new JLabel("고개횟수");
+		label.setBounds(35, 250, 300, 50);
+        label.setFont(new Font("고딕", Font.PLAIN, 20));
 		p.add(label);
-
-		g_turns = new JButton("5");
-		g_turns.setBounds(35, 390, 50, 50);
-		p.add(g_turns);
-
-		g_turns = new JButton("7");
-		g_turns.setBounds(85, 390, 50, 50);
-		p.add(g_turns);
-
-		g_turns = new JButton("10");
-		g_turns.setBounds(135, 390, 50, 50);
-		p.add(g_turns);
-
-		g_turns = new JButton("15");
-		g_turns.setBounds(185, 390, 50, 50);
-		p.add(g_turns);
-
-		g_turns = new JButton("20");
-		g_turns.setBounds(235, 390, 50, 50);
-		p.add(g_turns);
-
+		
+	    JCheckBox[] g_turnsCheckBoxes = new JCheckBox[5];
+	    ButtonGroup buttonGroup = new ButtonGroup();
+	    
+        for (int i = 0; i < g_turnsCheckBoxes.length; i++) {
+            g_turnsCheckBoxes[i] = new JCheckBox(names[i]);
+            g_turnsCheckBoxes[i].setBounds(20 + i * 55, 300, 55, 60);
+            g_turnsCheckBoxes[i].setFont(new Font("맑은고딕", Font.PLAIN, 20));
+            g_turnsCheckBoxes[i].setBorderPainted(true); // 체크박스에 테두리
+            buttonGroup.add(g_turnsCheckBoxes[i]); // 체크박스 1개만 선택 가능
+            p.add(g_turnsCheckBoxes[i]);
+            
+        }
+        
 		c_room = new JButton("생성");
+<<<<<<< HEAD
 		c_room.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -144,14 +149,38 @@ public class CreateRoomUI extends JFrame {
 				dispose(); // 현재의 프레임을 닫습니다.
 			}
 		});
+=======
+		c_room.setFont(new Font("고딕", Font.BOLD, 20));
+	    c_room.addActionListener(new ActionListener() {
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	            GameHost secondFrame = new GameHost();
+>>>>>>> branch 'main' of https://github.com/janggoms/Final_Porject_Network.git
 
-		c_room.setBounds(228, 633, 100, 30);
+	            // 체크박스를 반복하여 선택된 것을 찾습니다.
+	            for (int i = 0; i < g_turnsCheckBoxes.length; i++) {
+	                if (g_turnsCheckBoxes[i].isSelected()) {
+	                    remainingTurns = names[i];
+	                    secondFrame.setRemainingTurns(remainingTurns);
+	                    break;
+	                }
+	            }
+
+              secondFrame.setVisible(true);
+	            dispose();
+	        }
+	    });
+
+		c_room.setBounds(0, 600, 328, 60);
 		p.add(c_room);
 
 		return p;
 	}
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> branch 'main' of https://github.com/janggoms/Final_Porject_Network.git
 	public static void main(String[] args) {
 		new CreateRoomUI();
 	}
