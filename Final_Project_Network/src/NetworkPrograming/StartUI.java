@@ -1,8 +1,8 @@
 package NetworkPrograming;
 
-
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 //setLocation((int)((dmen.width - getSize().width)/2), 
@@ -22,12 +23,25 @@ public class StartUI extends JFrame {
 
 	public StartUI() {
 		setLayout(null);
-		ImagePanel backgroundPanel = new ImagePanel("/NetworkPrograming/Pic/sky.png");
+
+		JLabel title = new JLabel("캐치워드");
+		title.setBounds(390, 200, 300, 100);
+		title.setHorizontalAlignment(JLabel.CENTER);
+		title.setForeground(Color.WHITE);
+		
+		Font buttonFont = title.getFont();
+		title.setFont(new Font(buttonFont.getName(), Font.BOLD, 20));
+
+		Font labelFont = title.getFont();
+		title.setFont(new Font(labelFont.getName(), Font.PLAIN, 50));
+		add(title);
+
+		ImagePanel backgroundPanel = new ImagePanel("/NetworkPrograming/Pic/ocean.jpg");
 		backgroundPanel.setSize(new Dimension(1000, 700));
 		add(backgroundPanel);
 
 		JButton s_Button = new JButton("시작하기");
-		s_Button.setBounds(400, 425, 150, 75);
+		s_Button.setBounds(458, 400, 150, 50);
 		s_Button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -36,8 +50,7 @@ public class StartUI extends JFrame {
 				dispose(); // 현재의 프레임을 닫습니다.
 			}
 		});
-		s_Button.setForeground(new Color(255, 255, 255));
-		s_Button.setBackground(new Color(30, 144, 255));
+		s_Button.setBounds(488, 550, 100, 35);
 		add(s_Button);
 
 		setTitle("캐치 워드");
