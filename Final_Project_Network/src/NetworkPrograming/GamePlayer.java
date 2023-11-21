@@ -25,7 +25,6 @@ import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-
 public class GamePlayer extends JFrame {
 
 	private JLabel labelLogo;
