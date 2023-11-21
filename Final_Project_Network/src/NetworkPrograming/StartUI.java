@@ -12,10 +12,6 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-//setLocation((int)((dmen.width - getSize().width)/2), 
-//(int)((dmen.height - getSize().height))/2);
-// 어떤 환경이든 위치를 정중앙에 배치
-
 
 // 시작화면
 public class StartUI extends JFrame {

@@ -4,6 +4,7 @@
 
 package NetworkPrograming;
 
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -35,10 +36,10 @@ public class GameHost extends JFrame {
 	private JTextField t_Input;
 	private JLabel labelAnswerLogo;
 	private JTextArea t_userAnswerDisplay;
-	
-	   private JLabel timerLabel;
-	   private Timer timer;
-	   private int count = 30; // 초기 카운트 값
+
+	private JLabel timerLabel;
+	private Timer timer;
+	private int count = 30; // 초기 카운트 값
 
 
 	public GameHost() {
@@ -85,35 +86,39 @@ public class GameHost extends JFrame {
 		add(thirdDisplay, gbc);
 
 	}
-	
+
+
 	private JPanel first_Display() {
-	    JPanel first = new JPanel();
-	    first.setLayout(new BorderLayout());
+		JPanel first = new JPanel();
+		first.setLayout(new BorderLayout());
 
-	    ImagePanel labelLogo = new ImagePanel("/NetworkPrograming/Pic/CW_logo.png");
-	    labelLogo.setPreferredSize(new Dimension(150, 110)); // 이미지 크기 조절
-	    first.add(labelLogo, BorderLayout.NORTH);
+		ImagePanel labelLogo = new ImagePanel("/NetworkPrograming/Pic/CW_logo.png");
+		labelLogo.setPreferredSize(new Dimension(150, 110)); // 이미지 크기 조절
+		first.add(labelLogo, BorderLayout.NORTH);
 
-	    JPanel userInfoPanel = user_Info_Display();
-	    first.add(userInfoPanel, BorderLayout.CENTER);
+		JPanel userInfoPanel = user_Info_Display();
+		first.add(userInfoPanel, BorderLayout.CENTER);
 
-	    return first;
+		return first;
 	}
 
-	
+
 	class ImagePanel extends JPanel {
-	    private ImageIcon imageIcon;
+		private ImageIcon imageIcon;
 
-	    public ImagePanel(String imagePath) {
-	        imageIcon = new ImageIcon(getClass().getResource(imagePath));
-	    }
 
-	    @Override
-	    protected void paintComponent(Graphics g) {
-	        super.paintComponent(g);
-	        g.drawImage(imageIcon.getImage(), 0, 0, getWidth(), getHeight(), this);
-	    }
+		public ImagePanel(String imagePath) {
+			imageIcon = new ImageIcon(getClass().getResource(imagePath));
+		}
+
+
+		@Override
+		protected void paintComponent(Graphics g) {
+			super.paintComponent(g);
+			g.drawImage(imageIcon.getImage(), 0, 0, getWidth(), getHeight(), this);
+		}
 	}
+
 
 	// (1)_1 유저 입장정보 출력되는 공간 지정
 	private JPanel user_Info_Display() {
@@ -144,40 +149,41 @@ public class GameHost extends JFrame {
 
 		return second;
 	}
-	
-	
+
+
 	private JPanel updateTimer() {
-    JPanel p = new JPanel(new BorderLayout());
-    
-    JLabel remainingCounts = new JLabel("남은 횟수: ");
-    remainingCounts.setFont(new Font("NamunGothic", Font.BOLD, 20));
+		JPanel p = new JPanel(new BorderLayout());
 
-    JLabel timerLabel = new JLabel();
-    timerLabel.setFont(new Font("Arial", Font.PLAIN, 30));
-    timerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		JLabel remainingCounts = new JLabel("남은 횟수: ");
+		remainingCounts.setFont(new Font("NamunGothic", Font.BOLD, 20));
 
-    timerLabel.setText(Integer.toString(count));
+		JLabel timerLabel = new JLabel();
+		timerLabel.setFont(new Font("Arial", Font.PLAIN, 30));
+		timerLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-    timer = new Timer(1000, e -> {
-        if (--count > 0) {
-            timerLabel.setText(Integer.toString(count));
-        } else {
-            timer.stop();
-            timerLabel.setText("Next Question");
-        }
-    });
+		timerLabel.setText(Integer.toString(count));
 
-    timer.start();
-    
-    remainingCounts.setBorder(new EmptyBorder(0, 10, 0, 0)); // 오른쪽 여백
-    timerLabel.setBorder(new EmptyBorder(0, 0, 0, 50)); // 왼쪽 여백
-    
-    p.add(remainingCounts, BorderLayout.WEST);
-    p.add(timerLabel, BorderLayout.EAST);
+		timer = new Timer(1000, e -> {
+			if (--count > 0) {
+				timerLabel.setText(Integer.toString(count));
+			} else {
+				timer.stop();
+				timerLabel.setText("Next Question");
+			}
 
-    return p;
-}
-	
+		});
+
+		timer.start();
+
+		remainingCounts.setBorder(new EmptyBorder(0, 10, 0, 0)); // 오른쪽 여백
+		timerLabel.setBorder(new EmptyBorder(0, 0, 0, 50)); // 왼쪽 여백
+
+		p.add(remainingCounts, BorderLayout.WEST);
+		p.add(timerLabel, BorderLayout.EAST);
+
+		return p;
+	}
+
 
 	// (2)_1 질문들이 출력되는 공간 지정
 	private JPanel main_Question_Display() {
@@ -190,13 +196,15 @@ public class GameHost extends JFrame {
 
 		return p;
 	}
+
+
 	// (2)_2 출제자나 실행자가 질문과 정답을 적는 공간 지정
 	private JPanel input_Display() {
 		JPanel p = new JPanel(new BorderLayout());
 
 		t_Input = new JTextField(18);
 		JButton b_send = new JButton("보내기");
-		
+
 		b_send.setPreferredSize(new Dimension(b_send.getPreferredSize().width, 40));
 
 		p.add(t_Input, BorderLayout.CENTER);
@@ -214,10 +222,15 @@ public class GameHost extends JFrame {
 		labelAnswerLogo = new JLabel("정답 정보");
 		labelAnswerLogo.setFont(new Font("NamunGothic", Font.ITALIC, 30));
 		labelAnswerLogo.setHorizontalAlignment(SwingConstants.CENTER);
-		third.add(labelAnswerLogo, BorderLayout.NORTH);
+
+		JButton s_button = new JButton("시작하기");
+		s_button.setPreferredSize(new Dimension(s_button.getPreferredSize().width, 40));
 
 		JPanel userAnswerPanel = user_answer_Display();
+
 		third.add(userAnswerPanel, BorderLayout.CENTER);
+		third.add(s_button, BorderLayout.SOUTH);
+		third.add(labelAnswerLogo, BorderLayout.NORTH);
 
 		return third;
 	}
@@ -234,6 +247,7 @@ public class GameHost extends JFrame {
 
 		return p;
 	}
+
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> {
