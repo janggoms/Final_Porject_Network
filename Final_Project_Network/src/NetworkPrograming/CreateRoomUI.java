@@ -139,7 +139,7 @@ public class CreateRoomUI extends JFrame {
 		c_room.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				GameHost secondFrame = new GameHost();
+				GamePlayer secondFrame = new GamePlayer();
 				secondFrame.setVisible(true);
 				dispose(); // 현재의 프레임을 닫습니다.
 			}
