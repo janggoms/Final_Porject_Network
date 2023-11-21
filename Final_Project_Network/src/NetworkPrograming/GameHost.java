@@ -229,7 +229,7 @@ public class GameHost extends JFrame {
 	}
 
 
-	private JPanel updateTimer() {
+	public JPanel updateTimer() {
 		JPanel p = new JPanel(new BorderLayout());
 
 		remainingTurns = new JLabel("남은 횟수: ");

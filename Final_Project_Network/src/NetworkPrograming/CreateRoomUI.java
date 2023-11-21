@@ -135,16 +135,6 @@ public class CreateRoomUI extends JFrame {
 		}
 
 		c_room = new JButton("생성");
-
-		c_room.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				GameHost secondFrame = new GameHost();
-				secondFrame.setVisible(true);
-				dispose(); // 현재의 프레임을 닫습니다.
-			}
-		});
-
 		c_room.setFont(new Font("고딕", Font.BOLD, 20));
 		c_room.addActionListener(new ActionListener() {
 			@Override
