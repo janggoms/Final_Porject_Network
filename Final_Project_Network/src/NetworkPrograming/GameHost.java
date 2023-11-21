@@ -111,8 +111,8 @@ public class GameHost extends JFrame {
 
 		userInfoDisplay = new JTextArea();
 		userInfoDisplay.setEditable(false);
-		userInfoDisplay.setFont(new Font("Arial", Font.PLAIN, 10));
-		userInfoDisplay.append("User" + userNumber + " 입장\n");
+		userInfoDisplay.setFont(new Font("Arial", Font.PLAIN, 20));
+		userInfoDisplay.append("User" + userNumber + "\n\n");
 		p.add(new JScrollPane(userInfoDisplay), BorderLayout.CENTER);
 
 		return p;
@@ -282,7 +282,7 @@ public class GameHost extends JFrame {
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> {
-		    new GamePlayer();
+		    new GameHost();
 		});
 	}
 }
