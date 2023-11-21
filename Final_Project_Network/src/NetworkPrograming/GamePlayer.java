@@ -1,9 +1,9 @@
+package NetworkPrograming;
+
+
 // 게임 출제자 화면 -> 즉 사회자. 질문 적어주는 사람
 
 // 로고, 질문 횟수. 타이머 삽입 완료 - 현혜
-
-package NetworkPrograming;
-
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -26,6 +26,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+
 
 public class GamePlayer extends JFrame {
 
