@@ -12,11 +12,13 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -38,7 +40,9 @@ public class _03Game_H extends JFrame {
 	private String selectedCheckbox;
 	private JScrollPane scrollPane;
 
-	private boolean showRules = true;
+	private String secretAnswer; // 출제자가 정한 정답 단어를 저장할 변수
+	private ArrayList<String> answers = new ArrayList<>(); // 참가자들의 정답을 저장할 리스트
+
 	private boolean timerStarted = false;
 
 	private int count = 30; // 초기 카운트 값
@@ -166,12 +170,8 @@ public class _03Game_H extends JFrame {
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
 		// 게임 시작 전에 규칙을 표시하도록 설정
-		if (showRules = true) {
+		if (true) {
 			p.add(scrollPane, BorderLayout.CENTER);
-			// } else {
-			//
-			// // 게임 시작 버튼 클릭 시 규칙을 숨기도록 구현해야 함
-			// }
 		}
 
 		return p;
@@ -184,6 +184,10 @@ public class _03Game_H extends JFrame {
 
 		t_Input = new JTextField(18);
 		b_send = new JButton("보내기");
+		b_send.addActionListener(e -> {
+			processAnswer(); // 정답 처리 메서드 호출
+			t_Input.setText(""); // 입력 필드 초기화
+		});
 		b_send.setPreferredSize(new Dimension(b_send.getPreferredSize().width, 40));
 
 		p.add(t_Input, BorderLayout.CENTER);
@@ -205,11 +209,26 @@ public class _03Game_H extends JFrame {
 		s_button = new JButton("시작하기");
 		s_button.setPreferredSize(new Dimension(s_button.getPreferredSize().width, 40));
 		s_button.addActionListener(e -> {
-			showRules = false; // 규칙을 숨김
 			rulesTextArea.setText(""); // 규칙 내용을 제거
-			timerStarted = true; // 타이머 시작
-			timer.start(); // 타이머 시작
+			if (!timerStarted) {
+				secretAnswer = JOptionPane.showInputDialog(null, "정답을 입력하세요."); // 정답 입력 다이얼로그 표시
+
+				if (secretAnswer != null && !secretAnswer.isEmpty()) {
+					setSecretAnswer(secretAnswer); // 정답 설정
+					b_send.setEnabled(true); // 정답이 입력되면 보내기 버튼 활성화
+					s_button.setEnabled(false); // 시작하기 버튼 비활성화
+					timerStarted = true; // 타이머 시작
+					timer.start(); // 타이머 시작
+				} else {
+					JOptionPane.showMessageDialog(null, "정답을 입력하세요."); // 정답이 입력되지 않았을 때 알림
+				}
+
+			} else {
+				JOptionPane.showMessageDialog(null, "이미 정답을 입력했습니다."); // 이미 정답 입력한 경우 알림
+			}
+
 		});
+
 		JPanel userAnswerPanel = user_answer_Display();
 
 		third.add(userAnswerPanel, BorderLayout.CENTER);
@@ -230,6 +249,25 @@ public class _03Game_H extends JFrame {
 		p.add(new JScrollPane(t_userAnswerDisplay), BorderLayout.CENTER);
 
 		return p;
+	}
+
+
+	// (3)_2 실행자가 입력한 단어 출력
+	private void processAnswer() {
+		if (secretAnswer != null && !secretAnswer.isEmpty()) {
+			String participantAnswer = t_Input.getText(); // 사용자가 입력한 정답
+			checkAnswer(participantAnswer);
+			printDisplay("사용자 입력: " + participantAnswer); // 사용자 입력을 JTextArea에 출력
+		} else {
+			printDisplay("정답이 설정되지 않았습니다."); // JTextArea에 출력
+		}
+
+	}
+
+
+	private void printDisplay(String message) {
+		t_userAnswerDisplay.append(message + "\n"); // JTextArea에 메시지 추가
+		// t_questionDisplay.append(message + "\n");
 	}
 
 
@@ -266,6 +304,22 @@ public class _03Game_H extends JFrame {
 	public void setRemainingTurns(String value) {
 		selectedCheckbox = value;
 		remainingTurns.setText("남은 횟수: " + selectedCheckbox);
+	}
+
+
+	public void setSecretAnswer(String answer) {
+		this.secretAnswer = answer;
+	}
+
+
+	public void checkAnswer(String participantAnswer) {
+		if (participantAnswer.equalsIgnoreCase(secretAnswer)) {
+			printDisplay("정답입니다!"); // 화면에 정답 메시지 출력
+		} else {
+			printDisplay("오답입니다."); // 화면에 오답 메시지 출력
+			answers.add(participantAnswer); // 오답일 경우 리스트에 추가 (선택사항)
+		}
+
 	}
 
 
