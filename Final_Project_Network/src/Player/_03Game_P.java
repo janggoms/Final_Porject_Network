@@ -38,9 +38,11 @@ public class _03Game_P extends JFrame {
 	private String selectedCheckbox;
 	private JScrollPane scrollPane;
 
+	private boolean showRules = true;
+	private boolean timerStarted = false;
+
 	private int count = 30; // 초기 카운트 값
 	private int userCount = 0;
-	private boolean showRules = true;
 
 
 	public _03Game_P() {
@@ -200,11 +202,13 @@ public class _03Game_P extends JFrame {
 		labelAnswerLogo.setFont(new Font("NamunGothic", Font.ITALIC, 30));
 		labelAnswerLogo.setHorizontalAlignment(SwingConstants.CENTER);
 
-		s_button = new JButton("준비하기");
+		s_button = new JButton("시작하기");
 		s_button.setPreferredSize(new Dimension(s_button.getPreferredSize().width, 40));
 		s_button.addActionListener(e -> {
 			showRules = false; // 규칙을 숨김
 			rulesTextArea.setText(""); // 규칙 내용을 제거
+			timerStarted = true; // 타이머 시작
+			timer.start(); // 타이머 시작
 		});
 		JPanel userAnswerPanel = user_answer_Display();
 
@@ -235,16 +239,13 @@ public class _03Game_P extends JFrame {
 		remainingTurns = new JLabel("남은 횟수: ");
 		remainingTurns.setBounds(30, 100, 200, 50);
 		remainingTurns.setFont(new Font("고딕", Font.PLAIN, 20));
-		add(remainingTurns);
 
 		JLabel timerLabel = new JLabel();
 		timerLabel.setFont(new Font("Arial", Font.PLAIN, 30));
 		timerLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-		timerLabel.setText(Integer.toString(count));
-
 		timer = new Timer(1000, e -> {
-			if (--count > 0) {
+			if (timerStarted && --count > 0) {
 				timerLabel.setText(Integer.toString(count));
 			} else {
 				timer.stop();
@@ -253,7 +254,7 @@ public class _03Game_P extends JFrame {
 
 		});
 
-		timer.start();
+		timerLabel.setText(Integer.toString(count));
 
 		p.add(remainingTurns, BorderLayout.WEST);
 		p.add(timerLabel, BorderLayout.EAST);
