@@ -1,4 +1,4 @@
-package NetworkPrograming;
+package Host;
 
 
 import java.awt.BorderLayout;
@@ -18,14 +18,14 @@ import javax.swing.JTextArea;
 import javax.swing.border.LineBorder;
 
 
-public class GameOverUI extends JFrame {
+public class _04GameOver_H extends JFrame {
 
 	private JTextArea finalResultDisplay;
 	private JTextArea userOutDisplay;
 	private JButton b_restart, b_exit;
 
 
-	public GameOverUI() {
+	public _04GameOver_H() {
 		super("네프 최종 게임 종료화면 구성");
 		setSize(1000, 700);
 		setLocationRelativeTo(null);
@@ -81,7 +81,7 @@ public class GameOverUI extends JFrame {
 		b_restart.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				GamePlayer S_Frame = new GamePlayer();
+				_03Game_H S_Frame = new _03Game_H();
 				S_Frame.setVisible(true);
 				dispose(); // 현재의 프레임을 닫습니다.
 			}
@@ -90,7 +90,7 @@ public class GameOverUI extends JFrame {
 		b_exit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				CreateRoomUI S_Frame = new CreateRoomUI();
+				_02Room_H S_Frame = new _02Room_H();
 				S_Frame.setVisible(true);
 				dispose(); // 현재의 프레임을 닫습니다.
 			}
@@ -110,7 +110,7 @@ public class GameOverUI extends JFrame {
 
 
 	public static void main(String[] args) {
-		new GameOverUI();
+		new _04GameOver_H();
 
 	}
 

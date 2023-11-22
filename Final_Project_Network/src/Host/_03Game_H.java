@@ -1,4 +1,4 @@
-package NetworkPrograming;
+package Host;
 
 
 // 게임 출제자 화면 -> 즉 사회자. 질문 적어주는 사람
@@ -27,7 +27,7 @@ import javax.swing.Timer;
 import javax.swing.border.LineBorder;
 
 
-public class GameHost extends JFrame {
+public class _03Game_H extends JFrame {
 
 	private JLabel labelLogo, labelAnswerLogo, timerLabel, remainingTurns;
 	private JTextArea userInfoDisplay, t_questionDisplay, t_userAnswerDisplay, rulesTextArea;
@@ -43,7 +43,7 @@ public class GameHost extends JFrame {
 	private boolean showRules = true;
 
 
-	public GameHost() {
+	public _03Game_H() {
 		super("네프 메인 게임 화면 구성");
 		setSize(1000, 700);
 		setLocationRelativeTo(null);
@@ -93,7 +93,7 @@ public class GameHost extends JFrame {
 		JPanel first = new JPanel();
 		first.setLayout(new BorderLayout());
 
-		ImagePanel labelLogo = new ImagePanel("/NetworkPrograming/Pic/CW_logo.png");
+		ImagePanel labelLogo = new ImagePanel("/ImageFile/CW_logo.png");
 		labelLogo.setPreferredSize(new Dimension(150, 110)); // 이미지 크기 조절
 		first.add(labelLogo, BorderLayout.NORTH);
 
@@ -287,7 +287,7 @@ public class GameHost extends JFrame {
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> {
-		    new GameHost();
+		    new _03Game_H();
 		});
 	}
 }

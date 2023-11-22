@@ -1,4 +1,4 @@
-package NetworkPrograming;
+package Host;
 
 
 import java.awt.Color;
@@ -18,7 +18,7 @@ import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
 
-public class CreateRoomUI extends JFrame {
+public class _02Room_H extends JFrame {
 
 	public String remainingTurns;
 
@@ -28,7 +28,7 @@ public class CreateRoomUI extends JFrame {
 	private String[] names = { " 5", " 7", "10", "15", "20" };
 
 
-	public CreateRoomUI() {
+	public _02Room_H() {
 		setTitle("네프 방생성 화면 구성");
 		setSize(1000, 700);
 
@@ -84,7 +84,7 @@ public class CreateRoomUI extends JFrame {
 		e_room.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				GamePlayer T_Frame = new GamePlayer();
+				_03Game_H T_Frame = new _03Game_H();
 				T_Frame.setVisible(true);
 				dispose(); // 현재의 프레임을 닫습니다.
 			}
@@ -139,7 +139,7 @@ public class CreateRoomUI extends JFrame {
 		c_room.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				GameHost secondFrame = new GameHost();
+				_03Game_H secondFrame = new _03Game_H();
 
 				// 체크박스를 반복하여 선택된 것을 찾습니다.
 				for (int i = 0; i < g_turnsCheckBoxes.length; i++) {
@@ -164,6 +164,6 @@ public class CreateRoomUI extends JFrame {
 
 
 	public static void main(String[] args) {
-		new CreateRoomUI();
+		new _02Room_H();
 	}
 }

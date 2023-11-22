@@ -1,4 +1,4 @@
-package NetworkPrograming;
+package Player;
 
 
 import java.awt.Color;
@@ -14,11 +14,11 @@ import javax.swing.JPanel;
 
 
 // 시작화면
-public class StartUI extends JFrame {
+public class _01Start_P extends JFrame {
 
-	public StartUI() {
+	public _01Start_P() {
 		setLayout(null);
-		ImagePanel backgroundPanel = new ImagePanel("/NetworkPrograming/Pic/sky.png");
+		ImagePanel backgroundPanel = new ImagePanel("/ImageFile/sky.png");
 		backgroundPanel.setSize(new Dimension(1000, 700));
 		add(backgroundPanel);
 
@@ -27,7 +27,7 @@ public class StartUI extends JFrame {
 		s_Button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				CreateRoomUI S_Frame = new CreateRoomUI();
+				_02Room_P S_Frame = new _02Room_P();
 				S_Frame.setVisible(true);
 				dispose(); // 현재의 프레임을 닫습니다.
 			}
@@ -64,7 +64,7 @@ public class StartUI extends JFrame {
 
 
 	public static void main(String[] args) {
-		new StartUI();
+		new _01Start_P();
 	}
 
 }

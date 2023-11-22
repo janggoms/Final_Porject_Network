@@ -1,4 +1,4 @@
-package NetworkPrograming;
+package Player;
 
 
 // 게임 출제자 화면 -> 즉 사회자. 질문 적어주는 사람
@@ -24,26 +24,26 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 
-public class GamePlayer extends JFrame {
+public class _03Game_P extends JFrame {
 
-	private JLabel labelLogo, labelAnswerLogo, timerLabel, remainingCounts;
+	private JLabel labelLogo, labelAnswerLogo, timerLabel, remainingTurns;
 	private JTextArea userInfoDisplay, t_questionDisplay, t_userAnswerDisplay, rulesTextArea;
 	private JButton b_send, s_button;
 
 	private JTextField t_Input;
 	private Timer timer;
-	private int count = 30; // 초기 카운트 값
+	private String selectedCheckbox;
 	private JScrollPane scrollPane;
+
+	private int count = 30; // 초기 카운트 값
+	private int userCount = 0;
 	private boolean showRules = true;
 
-	private int userCount = 0;
 
-
-	public GamePlayer() {
+	public _03Game_P() {
 		super("네프 메인 게임 화면 구성");
 		setSize(1000, 700);
 		setLocationRelativeTo(null);
@@ -93,7 +93,7 @@ public class GamePlayer extends JFrame {
 		JPanel first = new JPanel();
 		first.setLayout(new BorderLayout());
 
-		ImagePanel labelLogo = new ImagePanel("/NetworkPrograming/Pic/CW_logo.png");
+		ImagePanel labelLogo = new ImagePanel("/ImageFile/CW_logo.png");
 		labelLogo.setPreferredSize(new Dimension(150, 110)); // 이미지 크기 조절
 		first.add(labelLogo, BorderLayout.NORTH);
 
@@ -101,23 +101,6 @@ public class GamePlayer extends JFrame {
 		first.add(userInfoPanel, BorderLayout.CENTER);
 
 		return first;
-	}
-
-
-	class ImagePanel extends JPanel {
-		private ImageIcon imageIcon;
-
-
-		public ImagePanel(String imagePath) {
-			imageIcon = new ImageIcon(getClass().getResource(imagePath));
-		}
-
-
-		@Override
-		protected void paintComponent(Graphics g) {
-			super.paintComponent(g);
-			g.drawImage(imageIcon.getImage(), 0, 0, getWidth(), getHeight(), this);
-		}
 	}
 
 
@@ -151,40 +134,6 @@ public class GamePlayer extends JFrame {
 		second.add(inputPanel, BorderLayout.SOUTH);
 
 		return second;
-	}
-
-
-	private JPanel updateTimer() {
-		JPanel p = new JPanel(new BorderLayout());
-
-		remainingCounts = new JLabel("남은 횟수: ");
-		remainingCounts.setFont(new Font("NamunGothic", Font.BOLD, 20));
-
-		timerLabel = new JLabel();
-		timerLabel.setFont(new Font("Arial", Font.PLAIN, 30));
-		timerLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-		timerLabel.setText(Integer.toString(count));
-
-		timer = new Timer(1000, e -> {
-			if (--count > 0) {
-				timerLabel.setText(Integer.toString(count));
-			} else {
-				timer.stop();
-				timerLabel.setText("Next Hint");
-			}
-
-		});
-
-		timer.start();
-
-		remainingCounts.setBorder(new EmptyBorder(0, 10, 0, 0)); // 오른쪽 여백
-		timerLabel.setBorder(new EmptyBorder(0, 0, 0, 50)); // 왼쪽 여백
-
-		p.add(remainingCounts, BorderLayout.WEST);
-		p.add(timerLabel, BorderLayout.EAST);
-
-		return p;
 	}
 
 
@@ -280,9 +229,65 @@ public class GamePlayer extends JFrame {
 	}
 
 
+	public JPanel updateTimer() {
+		JPanel p = new JPanel(new BorderLayout());
+
+		remainingTurns = new JLabel("남은 횟수: ");
+		remainingTurns.setBounds(30, 100, 200, 50);
+		remainingTurns.setFont(new Font("고딕", Font.PLAIN, 20));
+		add(remainingTurns);
+
+		JLabel timerLabel = new JLabel();
+		timerLabel.setFont(new Font("Arial", Font.PLAIN, 30));
+		timerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+		timerLabel.setText(Integer.toString(count));
+
+		timer = new Timer(1000, e -> {
+			if (--count > 0) {
+				timerLabel.setText(Integer.toString(count));
+			} else {
+				timer.stop();
+				timerLabel.setText("Next Question");
+			}
+
+		});
+
+		timer.start();
+
+		p.add(remainingTurns, BorderLayout.WEST);
+		p.add(timerLabel, BorderLayout.EAST);
+
+		return p;
+	}
+
+
+	public void setRemainingTurns(String value) {
+		selectedCheckbox = value;
+		remainingTurns.setText("남은 횟수: " + selectedCheckbox);
+	}
+
+
+	class ImagePanel extends JPanel {
+		private ImageIcon imageIcon;
+
+
+		public ImagePanel(String imagePath) {
+			imageIcon = new ImageIcon(getClass().getResource(imagePath));
+		}
+
+
+		@Override
+		protected void paintComponent(Graphics g) {
+			super.paintComponent(g);
+			g.drawImage(imageIcon.getImage(), 0, 0, getWidth(), getHeight(), this);
+		}
+	}
+
+
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> {
-		    new GamePlayer();
+		    new _03Game_P();
 		});
 	}
 }
