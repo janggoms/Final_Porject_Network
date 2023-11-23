@@ -268,7 +268,28 @@ public class _03Game_P extends JFrame {
 		remainingTurns.setText("남은 횟수: " + selectedCheckbox);
 	}
 
+	// // (3)_2 실행자가 입력한 단어 출력
+	// private void processAnswer() {
+	// if (secretAnswer != null && !secretAnswer.isEmpty()) {
+	// String participantAnswer = t_Input.getText(); // 사용자가 입력한 정답
+	// checkAnswer(participantAnswer);
+	// printDisplay("사용자 입력: " + participantAnswer); // 사용자 입력을 JTextArea에 출력
+	// } else {
+	// printDisplay("정답이 설정되지 않았습니다."); // JTextArea에 출력
+	// }
+	//
+	// }
 
+
+	// public void checkAnswer(String participantAnswer) {
+	// if (participantAnswer.equalsIgnoreCase(secretAnswer)) {
+	// printDisplay("정답입니다!"); // 화면에 정답 메시지 출력
+	// } else {
+	// printDisplay("오답입니다."); // 화면에 오답 메시지 출력
+	// answers.add(participantAnswer); // 오답일 경우 리스트에 추가 (선택사항)
+	// }
+	//
+	// }
 	class ImagePanel extends JPanel {
 		private ImageIcon imageIcon;
 
