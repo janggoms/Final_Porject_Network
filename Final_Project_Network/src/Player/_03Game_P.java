@@ -201,6 +201,7 @@ public class _03Game_P extends JFrame {
 		labelAnswerLogo = new JLabel("정답 정보");
 		labelAnswerLogo.setFont(new Font("NamunGothic", Font.ITALIC, 30));
 		labelAnswerLogo.setHorizontalAlignment(SwingConstants.CENTER);
+		labelAnswerLogo.setEnabled(false);
 
 		s_button = new JButton("시작하기");
 		s_button.setPreferredSize(new Dimension(s_button.getPreferredSize().width, 40));
