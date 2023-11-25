@@ -13,6 +13,7 @@ import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -40,6 +41,7 @@ public class _03Game_H extends JFrame {
 	private JScrollPane scrollPane;
 	private Timer timer;
 
+	private List<Boolean> userReadyList = new ArrayList<>(); // 유저들의 준비 여부를 저장하는 리스트 추가
 	private ArrayList<String> answers = new ArrayList<>(); // 참가자들의 정답을 저장할 리스트
 	private boolean timerStarted = false;
 
@@ -200,6 +202,7 @@ public class _03Game_H extends JFrame {
 		labelAnswerLogo.setHorizontalAlignment(SwingConstants.CENTER);
 
 		s_button = new JButton("시작하기");
+		// s_button.setEnabled(false);
 		s_button.setPreferredSize(new Dimension(s_button.getPreferredSize().width, 40));
 		s_button.addActionListener(e -> {
 			rulesTextArea.setText("");
@@ -210,11 +213,7 @@ public class _03Game_H extends JFrame {
 					setSecretAnswer(secretAnswer);
 					b_send.setEnabled(true);
 					s_button.setEnabled(false);
-				} else {
-					JOptionPane.showMessageDialog(null, "정답을 입력하세요.");
-				}
 
-				if (secretAnswer != null) {
 					hint = JOptionPane.showInputDialog(null, "힌트를 입력하세요.");
 					if (hint != null && !hint.isEmpty()) {
 						printDisplay("힌트: " + hint);
@@ -225,7 +224,7 @@ public class _03Game_H extends JFrame {
 					}
 
 				} else {
-					JOptionPane.showMessageDialog(null, "이미 힌트를 입력했습니다.");
+					JOptionPane.showMessageDialog(null, "정답을 입력하세요.");
 				}
 
 			} else {
@@ -295,6 +294,14 @@ public class _03Game_H extends JFrame {
 			} else {
 				timer.stop();
 				timerLabel.setText("Next Question");
+				// 타이머가 종료될 때 두 번째 힌트를 받는 부분 추가
+				String secondHint = JOptionPane.showInputDialog(null, "두 번째 힌트를 입력하세요.");
+				if (secondHint != null && !secondHint.isEmpty()) {
+					printDisplay("두 번째 힌트: " + secondHint);
+				} else {
+					JOptionPane.showMessageDialog(null, "두 번째 힌트를 입력하세요.");
+				}
+
 			}
 
 		});
@@ -321,6 +328,24 @@ public class _03Game_H extends JFrame {
 	public void setRemainingTurns(String value) {
 		selectedCheckbox = value;
 		remainingTurns.setText("남은 횟수: " + selectedCheckbox);
+	}
+
+
+	public void setUserReady(int userNumber, boolean isReady) {
+		if (userNumber >= 0 && userNumber < userReadyList.size()) {
+			userReadyList.set(userNumber, isReady);
+			checkAllUsersReady();
+		}
+
+	}
+
+
+	private void checkAllUsersReady() {
+		boolean allReady = !userReadyList.contains(false);
+		if (allReady) {
+			s_button.setEnabled(true); // 모든 유저가 준비했을 때 시작 버튼 활성화
+		}
+
 	}
 
 

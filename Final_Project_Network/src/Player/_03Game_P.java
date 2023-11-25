@@ -9,6 +9,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -25,6 +26,8 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.border.LineBorder;
+
+import Host._03Game_H;
 
 
 public class _03Game_P extends JFrame {
@@ -185,7 +188,17 @@ public class _03Game_P extends JFrame {
 		t_Input = new JTextField(18);
 		b_send = new JButton("보내기");
 		b_send.setPreferredSize(new Dimension(b_send.getPreferredSize().width, 40));
+		b_send.addActionListener(e -> {
+			String userAnswer = t_Input.getText(); // 유저가 입력한 답변
+			// boolean isCorrect = checkAnswer(userAnswer); // 답변 확인
 
+			// if (isCorrect) {
+			// printDisplay("정답입니다!");
+			// } else {
+			// printDisplay("오답입니다.");
+			// }
+
+		});
 		p.add(t_Input, BorderLayout.CENTER);
 		p.add(b_send, BorderLayout.EAST);
 
@@ -203,13 +216,23 @@ public class _03Game_P extends JFrame {
 		labelAnswerLogo.setHorizontalAlignment(SwingConstants.CENTER);
 		labelAnswerLogo.setEnabled(false);
 
-		s_button = new JButton("시작하기");
+		s_button = new JButton("준비하기");
 		s_button.setPreferredSize(new Dimension(s_button.getPreferredSize().width, 40));
 		s_button.addActionListener(e -> {
-			showRules = false; // 규칙을 숨김
-			rulesTextArea.setText(""); // 규칙 내용을 제거
+			_03Game_H gameFrame = getGameFrame();
+			if (gameFrame != null) {
+				gameFrame.setUserReady(userCount - 1, true); // 유저가 준비했음을 전달
+				showRules = false; // 규칙을 숨김
+				rulesTextArea.setText(""); // 규칙 내용을 제거
+			}
+
+			s_button.setEnabled(false);
+			// showRules = false; // 규칙을 숨김
+			// rulesTextArea.setText(""); // 규칙 내용을 제거
 			timerStarted = true; // 타이머 시작
-			timer.start(); // 타이머 시작
+			startTimer();
+			// timer.start(); // 타이머 시작
+			timer.stop();
 		});
 		JPanel userAnswerPanel = user_answer_Display();
 
@@ -218,6 +241,16 @@ public class _03Game_P extends JFrame {
 		third.add(labelAnswerLogo, BorderLayout.NORTH);
 
 		return third;
+	}
+
+
+	private _03Game_H getGameFrame() {
+		for (Frame frame : Frame.getFrames()) {
+			if (frame instanceof _03Game_H) { return (_03Game_H) frame; }
+
+		}
+
+		return null;
 	}
 
 
@@ -231,6 +264,17 @@ public class _03Game_P extends JFrame {
 		p.add(new JScrollPane(t_userAnswerDisplay), BorderLayout.CENTER);
 
 		return p;
+	}
+
+	// private boolean checkAnswer(String userAnswer) {
+	// String correctAnswer = "_03Game_H 클래스의 secretAnswer에 접근하는 방법"; // 여기에 실제 정답이 들어가야 합니다.
+	// return userAnswer.equalsIgnoreCase(correctAnswer);
+	// }
+
+
+	private void printDisplay(String message) {
+		// JTextArea에 메시지 출력하는 로직을 추가해야 합니다.
+		t_userAnswerDisplay.append(message + "\n");
 	}
 
 
@@ -269,7 +313,7 @@ public class _03Game_P extends JFrame {
 		remainingTurns.setText("남은 횟수: " + selectedCheckbox);
 	}
 
-	// // (3)_2 실행자가 입력한 단어 출력
+	// (3)_2 실행자가 입력한 단어 출력
 	// private void processAnswer() {
 	// if (secretAnswer != null && !secretAnswer.isEmpty()) {
 	// String participantAnswer = t_Input.getText(); // 사용자가 입력한 정답
@@ -280,8 +324,8 @@ public class _03Game_P extends JFrame {
 	// }
 	//
 	// }
-
-
+	//
+	//
 	// public void checkAnswer(String participantAnswer) {
 	// if (participantAnswer.equalsIgnoreCase(secretAnswer)) {
 	// printDisplay("정답입니다!"); // 화면에 정답 메시지 출력
@@ -291,6 +335,8 @@ public class _03Game_P extends JFrame {
 	// }
 	//
 	// }
+
+
 	class ImagePanel extends JPanel {
 		private ImageIcon imageIcon;
 
@@ -305,6 +351,18 @@ public class _03Game_P extends JFrame {
 			super.paintComponent(g);
 			g.drawImage(imageIcon.getImage(), 0, 0, getWidth(), getHeight(), this);
 		}
+	}
+
+
+	public void startTimer() {
+		timerStarted = true;
+		timer.start();
+	}
+
+
+	public void stopTimer() {
+		timerStarted = false;
+		timer.stop();
 	}
 
 
