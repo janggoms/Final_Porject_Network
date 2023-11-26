@@ -47,6 +47,8 @@ public class _03Game_P extends JFrame {
 	private int count = 30; // 초기 카운트 값
 	private int userCount = 0;
 
+	private SimpleChatClient client;
+
 
 	public _03Game_P() {
 		super("네프 메인 게임 화면 구성");
@@ -61,6 +63,8 @@ public class _03Game_P extends JFrame {
 		buildGUI();
 
 		setVisible(true);
+		client = new SimpleChatClient("localhost", 54321); // 서버 주소와 포트 번호를 넣어주세요
+		client.sendMessage(null);
 	}
 
 

@@ -48,9 +48,12 @@ public class _03Game_H extends JFrame {
 	private int count = 30; // 초기 카운트 값
 	private int userCount = 0;
 
+	private SimpleChatServer server;
+
 
 	public _03Game_H() {
 		super("네프 메인 게임 화면 구성");
+
 		setSize(1000, 700);
 		setLocationRelativeTo(null);
 		setResizable(false);
@@ -58,7 +61,12 @@ public class _03Game_H extends JFrame {
 
 		setLayout(new GridBagLayout());
 		buildGUI();
+
 		setVisible(true);
+
+		server = new SimpleChatServer(54321); // SimpleChatServer 객체 생성
+		server.startServer(); // startServer() 호출
+
 	}
 
 
@@ -368,7 +376,8 @@ public class _03Game_H extends JFrame {
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> {
-		    new _03Game_H();
+
+			new _03Game_H();
 		});
 	}
 }
