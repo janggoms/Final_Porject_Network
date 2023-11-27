@@ -15,13 +15,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.LineBorder;
 
-
 public class _04GameOver extends JFrame {
 
 	private JTextArea finalResultDisplay;
 	private JTextArea userOutDisplay;
 	private JButton b_restart, b_exit;
-
 
 	public _04GameOver() {
 		super("네프 최종 게임 종료화면 구성");
@@ -34,7 +32,6 @@ public class _04GameOver extends JFrame {
 		buildGUI();
 		setVisible(true);
 	}
-
 
 	private void buildGUI() {
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -68,7 +65,6 @@ public class _04GameOver extends JFrame {
 
 		return first;
 	}
-
 
 	// 유저 퇴장알림과 재시작, 퇴장 버튼이 있는 화면
 	private JPanel second_Display() {
@@ -107,10 +103,7 @@ public class _04GameOver extends JFrame {
 		return second;
 	}
 
-
 	public static void main(String[] args) {
 		new _04GameOver();
-
 	}
-
 }

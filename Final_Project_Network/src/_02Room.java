@@ -1,3 +1,4 @@
+// 방생성 화면으로 생성하기 버튼을 눌르면 호스트 화면으로, 방 목록에서 버튼을 누르면 플레이어 화면으로 넘어감
 
 import java.awt.Color;
 import java.awt.Font;
@@ -121,7 +122,7 @@ public class _02Room extends JFrame {
                 
                 gameHost.setRemainingTurns(remainingTurns);
                 gameHost.setVisible(true);
-                dispose();
+//                dispose();
             }
         });
 
@@ -132,16 +133,17 @@ public class _02Room extends JFrame {
         return p;
     }
 
-
+    // 방생성 버튼을 누르면 화면에 해당 방을 입장할 수 있는 버튼이 나타남
     private void createRoomButton() {
-        String roomNameText = roomName.getText().trim();
-        if (!roomNameText.isEmpty()) {
+        String roomNameText = roomName.getText().trim(); //공백제거
+        if (!roomNameText.isEmpty()) { // 방이름이 비어있으면 생성X
             JButton newRoomButton = new JButton(roomNameText);
             roomButtons.add(newRoomButton);
             refreshRoomButtons();
         }
     }
 
+    // 방 목록 업데이트. 생성한 방이 고정된 좌표값에 대입됨
     private void refreshRoomButtons() {
         JPanel firstPanel = (JPanel) getContentPane().getComponent(0);
         firstPanel.removeAll();

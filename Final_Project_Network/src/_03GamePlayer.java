@@ -1,3 +1,5 @@
+// 게임 실행자 클래스
+// 진행자가 적는 질문에 대한 답을 추리해서 단어를 입력함
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -110,7 +112,6 @@ public class _03GamePlayer extends JFrame {
 
 	}
 
-
 	private JPanel first_Display() {
 		JPanel first = new JPanel();
 		first.setLayout(new BorderLayout());
@@ -124,7 +125,6 @@ public class _03GamePlayer extends JFrame {
 
 		return first;
 	}
-
 
 	// (1)_1 유저 입장정보 출력되는 공간 지정
 	private JPanel user_Info_Display() {
@@ -157,7 +157,6 @@ public class _03GamePlayer extends JFrame {
 
 		return second;
 	}
-
 
 	// (2)_1 질문들이 출력되는 공간 지정
 	private JPanel main_Question_Display() {
@@ -192,7 +191,6 @@ public class _03GamePlayer extends JFrame {
 		return p;
 	}
 
-
 	// (2)_2 출제자나 실행자가 질문과 정답을 적는 공간 지정
 	private JPanel input_Display() {
 		JPanel p = new JPanel(new BorderLayout());
@@ -218,7 +216,6 @@ public class _03GamePlayer extends JFrame {
 
 		return p;
 	}
-
 
 	private JPanel third_Display() {
 		JPanel third = new JPanel();
@@ -261,7 +258,6 @@ public class _03GamePlayer extends JFrame {
 
 		return null;
 	}
-
 
 	// (3)_1 실행자가 적은 정답 단어 출력되는 공간 지정
 	private JPanel user_answer_Display() {
@@ -322,9 +318,7 @@ public class _03GamePlayer extends JFrame {
 				} else {
 					JOptionPane.showMessageDialog(null, "두 번째 힌트를 입력하세요.");
 				}
-
 			}
-
 		});
 
 		timerLabel.setText(Integer.toString(count));
@@ -340,17 +334,14 @@ public class _03GamePlayer extends JFrame {
 		rulesTextArea.append(message + "\n");
 	}
 
-
 	public void setSecretAnswer(String answer) {
 		this.secretAnswer = answer;
 	}
-
 
 	public void setRemainingTurns(String value) {
 		selectedCheckbox = value;
 		remainingTurns.setText("남은 횟수: " + selectedCheckbox);
 	}
-
 
 	public void setUserReady(int userNumber, boolean isReady) {
 		if (userNumber >= 0 && userNumber < userReadyList.size()) {
@@ -360,7 +351,6 @@ public class _03GamePlayer extends JFrame {
 
 	}
 
-
 	private void checkAllUsersReady() {
 		boolean allReady = !userReadyList.contains(false);
 		if (allReady) {
@@ -368,7 +358,6 @@ public class _03GamePlayer extends JFrame {
 		}
 
 	}
-
 
 	class ImagePanel extends JPanel {
 		private ImageIcon imageIcon;
@@ -406,7 +395,6 @@ public class _03GamePlayer extends JFrame {
 	    }
 	}
 
-	
 	private void sendMessage() {
 	    String message = t_input.getText();
 	    if (message.isEmpty()) return;
@@ -425,8 +413,6 @@ public class _03GamePlayer extends JFrame {
 	    t_input.setText("");
 	}
 
-	
-    
     private void receiveMessage() {
         try {
             String inMsg = ((BufferedReader) in).readLine();

@@ -1,3 +1,5 @@
+// 게임 출제자 클래스
+// 질문을 보내는 사람이며, 정답을 맞출 수 없다.
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -66,6 +68,7 @@ public class _03GameHost extends JFrame {
 		setVisible(true);
 		
 		this.port = port;
+		startServer();
 	}
 
 
@@ -246,15 +249,12 @@ public class _03GameHost extends JFrame {
 					} else {
 						JOptionPane.showMessageDialog(null, "힌트를 입력하세요.");
 					}
-
 				} else {
 					JOptionPane.showMessageDialog(null, "정답을 입력하세요.");
 				}
-
 			} else {
 				JOptionPane.showMessageDialog(null, "이미 정답을 입력했습니다.");
 			}
-
 		});
 
 		JPanel userAnswerPanel = user_answer_Display(hint);
@@ -372,7 +372,7 @@ public class _03GameHost extends JFrame {
 
 	}
 
-
+	// 배경이미지
 	class ImagePanel extends JPanel {
 		private ImageIcon imageIcon;
 
@@ -387,6 +387,7 @@ public class _03GameHost extends JFrame {
 		}
 	}
 	
+	// 서버(호스트)와 클라이언트(플레이어)간 연결
 	private void startServer() {
 	    try {
 	        serverSocket = new ServerSocket(port);
