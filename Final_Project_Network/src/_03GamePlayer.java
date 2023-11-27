@@ -1,9 +1,3 @@
-package Player;
-
-
-// 게임 출제자 화면 -> 즉 사회자. 질문 적어주는 사람
-
-// 로고, 질문 횟수. 타이머 삽입 완료 - 현혜
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -13,11 +7,22 @@ import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -27,44 +32,52 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.border.LineBorder;
 
-import Host._03Game_H;
 
-
-public class _03Game_P extends JFrame {
+public class _03GamePlayer extends JFrame {
+	
+	private String serverAddress;
+	private int serverPort;
 
 	private JLabel labelLogo, labelAnswerLogo, timerLabel, remainingTurns;
 	private JTextArea userInfoDisplay, t_questionDisplay, t_userAnswerDisplay, rulesTextArea;
 	private JButton b_send, s_button;
+	private String selectedCheckbox, secretAnswer, hint;
 
-	private JTextField t_Input;
-	private Timer timer;
-	private String selectedCheckbox;
+	private JTextField t_input;
 	private JScrollPane scrollPane;
+	private Timer timer;
+
+	private List<Boolean> userReadyList = new ArrayList<>(); // 유저들의 준비 여부를 저장하는 리스트 추가
+	private ArrayList<String> answers = new ArrayList<>(); // 참가자들의 정답을 저장할 리스트
 
 	private boolean showRules = true;
 	private boolean timerStarted = false;
-
+	
 	private int count = 30; // 초기 카운트 값
 	private int userCount = 0;
+	
+	private Socket socket;
+	private Writer out;
+	private Reader in;
+	
+	private Thread receiveThread = null;
 
-	private SimpleChatClient client;
 
-
-	public _03Game_P() {
+	public _03GamePlayer(String serverAddress, int serverPort) {
 		super("네프 메인 게임 화면 구성");
 		setSize(1000, 700);
 		setLocationRelativeTo(null);
 		setResizable(false);
-
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		setLayout(new GridBagLayout());
-
 		buildGUI();
-
 		setVisible(true);
-		client = new SimpleChatClient("localhost", 54321); // 서버 주소와 포트 번호를 넣어주세요
-		client.sendMessage(null);
+		
+		this.serverAddress = serverAddress;
+		this.serverPort = serverPort;
+		
+        connectToServer(); // 서버에 연결
 	}
 
 
@@ -150,12 +163,11 @@ public class _03Game_P extends JFrame {
 	private JPanel main_Question_Display() {
 		JPanel p = new JPanel(new BorderLayout());
 
-		// 규칙을 담은 JTextArea 생성
 		rulesTextArea = new JTextArea();
 		rulesTextArea.setEditable(false);
 		rulesTextArea.setLineWrap(true);
 		rulesTextArea.setText(
-		    "\n\n\n\n\n\n\n\n규칙\r\n\n"
+		    "\n\n\n\n\n\n\n규칙\r\n\n"
 		        + "- 게임 출제자는 시작 전, 실행자가 맞출 단어를 선정한다.\r\n\n"
 		        + "- 출제자가 단어를 선정하는 과정부터 실행자 중 한 명이 정답을 맞추는\r\n\n"
 		        + "  과정까지 실행자는 단어를 볼 수 없다.\r\n\n"
@@ -163,22 +175,18 @@ public class _03Game_P extends JFrame {
 		        + "- 실행자는 그 설명을 보고 연상되는 단어를 입력한다.\r\n\n"
 		        + "- 실행자 중 단어의 정답이 없으면, 다음 설명으로 넘어간다.\r\n\n"
 		        + "- 이 과정을 반복 후, 실행자 중 한 명이 정답을 말하면 게임이 종료된다.\r\n\n"
-		        + "- 게임 종료 시 결과창이 나타난다.\r\n\n"
-		        + "");
+		        + "- 게임 종료 시 결과창이 나타난다.\r\n\n");
 
 		rulesTextArea.setFont(new Font("굴림", Font.BOLD, 14));
 
 		scrollPane = new JScrollPane(rulesTextArea);
 		scrollPane.setPreferredSize(new Dimension(280, 330));
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		p.add(scrollPane, BorderLayout.CENTER);
 
-		// 게임 시작 전에 규칙을 표시하도록 설정
-		if (showRules = true) {
-			p.add(scrollPane, BorderLayout.CENTER);
-			// } else {
-			//
-			// // 게임 시작 버튼 클릭 시 규칙을 숨기도록 구현해야 함
-			// }
+		if (rulesTextArea.getText().contains("규칙")) {
+			rulesTextArea
+			    .setText(rulesTextArea.getText() + (hint != null ? "\n" + hint + "\n" : ""));
 		}
 
 		return p;
@@ -189,11 +197,12 @@ public class _03Game_P extends JFrame {
 	private JPanel input_Display() {
 		JPanel p = new JPanel(new BorderLayout());
 
-		t_Input = new JTextField(18);
+		t_input = new JTextField(18);
 		b_send = new JButton("보내기");
 		b_send.setPreferredSize(new Dimension(b_send.getPreferredSize().width, 40));
+
 		b_send.addActionListener(e -> {
-			String userAnswer = t_Input.getText(); // 유저가 입력한 답변
+			String userAnswer = t_input.getText(); // 유저가 입력한 답변
 			// boolean isCorrect = checkAnswer(userAnswer); // 답변 확인
 
 			// if (isCorrect) {
@@ -203,14 +212,14 @@ public class _03Game_P extends JFrame {
 			// }
 
 		});
-		p.add(t_Input, BorderLayout.CENTER);
+
+		p.add(t_input, BorderLayout.CENTER);
 		p.add(b_send, BorderLayout.EAST);
 
 		return p;
 	}
 
 
-	// (3) 실행자의 정답 정보가 보여지는 오른쪽 화면
 	private JPanel third_Display() {
 		JPanel third = new JPanel();
 		third.setLayout(new BorderLayout());
@@ -221,20 +230,17 @@ public class _03Game_P extends JFrame {
 		labelAnswerLogo.setEnabled(false);
 
 		s_button = new JButton("준비하기");
+		s_button.setEnabled(true);
 		s_button.setPreferredSize(new Dimension(s_button.getPreferredSize().width, 40));
 		s_button.addActionListener(e -> {
-			_03Game_H gameFrame = getGameFrame();
+			_03GameHost gameFrame = getGameFrame();
 			if (gameFrame != null) {
 				gameFrame.setUserReady(userCount - 1, true); // 유저가 준비했음을 전달
 				showRules = false; // 규칙을 숨김
 				rulesTextArea.setText(""); // 규칙 내용을 제거
 			}
 
-			s_button.setEnabled(false);
-			// showRules = false; // 규칙을 숨김
-			// rulesTextArea.setText(""); // 규칙 내용을 제거
 			timerStarted = true; // 타이머 시작
-			startTimer();
 			// timer.start(); // 타이머 시작
 			timer.stop();
 		});
@@ -246,11 +252,10 @@ public class _03Game_P extends JFrame {
 
 		return third;
 	}
-
-
-	private _03Game_H getGameFrame() {
+	
+	private _03GameHost getGameFrame() {
 		for (Frame frame : Frame.getFrames()) {
-			if (frame instanceof _03Game_H) { return (_03Game_H) frame; }
+			if (frame instanceof _03GameHost) { return (_03GameHost) frame; }
 
 		}
 
@@ -270,16 +275,27 @@ public class _03Game_P extends JFrame {
 		return p;
 	}
 
-	// private boolean checkAnswer(String userAnswer) {
-	// String correctAnswer = "_03Game_H 클래스의 secretAnswer에 접근하는 방법"; // 여기에 실제 정답이 들어가야 합니다.
-	// return userAnswer.equalsIgnoreCase(correctAnswer);
+	// // (3)_2 실행자가 입력한 단어 출력
+	// private void processAnswer() {
+	// if (secretAnswer != null && !secretAnswer.isEmpty()) {
+	// String participantAnswer = t_Input.getText(); // 사용자가 입력한 정답
+	// checkAnswer(participantAnswer);
+	// printDisplay("사용자 입력: " + participantAnswer); // 사용자 입력을 JTextArea에 출력
+	// } else {
+	// printDisplay("정답이 설정되지 않았습니다."); // JTextArea에 출력
+	// }
+	//
 	// }
 
-
-	private void printDisplay(String message) {
-		// JTextArea에 메시지 출력하는 로직을 추가해야 합니다.
-		t_userAnswerDisplay.append(message + "\n");
-	}
+	// public void checkAnswer(String participantAnswer) {
+	// if (participantAnswer.equalsIgnoreCase(secretAnswer)) {
+	// printDisplay("정답입니다!"); // 화면에 정답 메시지 출력
+	// } else {
+	// printDisplay("오답입니다."); // 화면에 오답 메시지 출력
+	// answers.add(participantAnswer); // 오답일 경우 리스트에 추가 (선택사항)
+	// }
+	//
+	// }
 
 
 	public JPanel updateTimer() {
@@ -299,6 +315,14 @@ public class _03Game_P extends JFrame {
 			} else {
 				timer.stop();
 				timerLabel.setText("Next Question");
+				// 타이머가 종료될 때 두 번째 힌트를 받는 부분 추가
+				String secondHint = JOptionPane.showInputDialog(null, "두 번째 힌트를 입력하세요.");
+				if (secondHint != null && !secondHint.isEmpty()) {
+					printDisplay("두 번째 힌트: " + secondHint);
+				} else {
+					JOptionPane.showMessageDialog(null, "두 번째 힌트를 입력하세요.");
+				}
+
 			}
 
 		});
@@ -312,33 +336,38 @@ public class _03Game_P extends JFrame {
 	}
 
 
+	private void printDisplay(String message) {
+		rulesTextArea.append(message + "\n");
+	}
+
+
+	public void setSecretAnswer(String answer) {
+		this.secretAnswer = answer;
+	}
+
+
 	public void setRemainingTurns(String value) {
 		selectedCheckbox = value;
 		remainingTurns.setText("남은 횟수: " + selectedCheckbox);
 	}
 
-	// (3)_2 실행자가 입력한 단어 출력
-	// private void processAnswer() {
-	// if (secretAnswer != null && !secretAnswer.isEmpty()) {
-	// String participantAnswer = t_Input.getText(); // 사용자가 입력한 정답
-	// checkAnswer(participantAnswer);
-	// printDisplay("사용자 입력: " + participantAnswer); // 사용자 입력을 JTextArea에 출력
-	// } else {
-	// printDisplay("정답이 설정되지 않았습니다."); // JTextArea에 출력
-	// }
-	//
-	// }
-	//
-	//
-	// public void checkAnswer(String participantAnswer) {
-	// if (participantAnswer.equalsIgnoreCase(secretAnswer)) {
-	// printDisplay("정답입니다!"); // 화면에 정답 메시지 출력
-	// } else {
-	// printDisplay("오답입니다."); // 화면에 오답 메시지 출력
-	// answers.add(participantAnswer); // 오답일 경우 리스트에 추가 (선택사항)
-	// }
-	//
-	// }
+
+	public void setUserReady(int userNumber, boolean isReady) {
+		if (userNumber >= 0 && userNumber < userReadyList.size()) {
+			userReadyList.set(userNumber, isReady);
+			checkAllUsersReady();
+		}
+
+	}
+
+
+	private void checkAllUsersReady() {
+		boolean allReady = !userReadyList.contains(false);
+		if (allReady) {
+			s_button.setEnabled(true); // 모든 유저가 준비했을 때 시작 버튼 활성화
+		}
+
+	}
 
 
 	class ImagePanel extends JPanel {
@@ -356,23 +385,64 @@ public class _03Game_P extends JFrame {
 			g.drawImage(imageIcon.getImage(), 0, 0, getWidth(), getHeight(), this);
 		}
 	}
+	
+	private void connectToServer() {
+	    try {
+	        socket = new Socket(serverAddress, serverPort);
+	        out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
+	        in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
 
-
-	public void startTimer() {
-		timerStarted = true;
-		timer.start();
+	        receiveThread = new Thread(() -> {
+	            while (receiveThread == Thread.currentThread()) {
+	                receiveMessage();
+	            }
+	        });
+	        receiveThread.start();
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	        System.err.println("클라이언트 연결 오류> " + e.getMessage());
+	        JOptionPane.showMessageDialog(null, "서버에 연결할 수 없습니다. 프로그램을 종료합니다.");
+	        System.exit(-1);
+	    }
 	}
 
+	
+	private void sendMessage() {
+	    String message = t_input.getText();
+	    if (message.isEmpty()) return;
 
-	public void stopTimer() {
-		timerStarted = false;
-		timer.stop();
+	    try {
+	        out.write(message + "\n");
+	        out.flush(); // 버퍼 비우기
+
+	        t_userAnswerDisplay.append("나: " + message + "\n");
+	    } catch (IOException e) {
+	        System.err.println("클라이언트 일반 전송 오류> " + e.getMessage());
+	        JOptionPane.showMessageDialog(null, "메시지를 전송할 수 없습니다.");
+	        System.exit(-1);
+	    }
+
+	    t_input.setText("");
 	}
+
+	
+    
+    private void receiveMessage() {
+        try {
+            String inMsg = ((BufferedReader) in).readLine();
+            t_userAnswerDisplay.append("서버:\t" + inMsg + "\n");
+        } catch (IOException e) {
+            System.out.println("클라이언트 일반 수신 오류> " + e.getMessage());
+        }
+    }
 
 
 	public static void main(String[] args) {
+		String serverAddress = "localhost";
+		int serverPort = 54321;
+		
 		SwingUtilities.invokeLater(() -> {
-		    new _03Game_P();
+		    new _03GamePlayer(serverAddress, serverPort);
 		});
 	}
 }

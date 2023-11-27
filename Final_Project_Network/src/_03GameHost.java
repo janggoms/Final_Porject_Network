@@ -1,9 +1,3 @@
-package Host;
-
-
-// 게임 출제자 화면 -> 즉 사회자. 질문 적어주는 사람
-
-// 로고, 질문 횟수. 타이머 삽입 완료 - 현혜
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -12,6 +6,14 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,14 +32,18 @@ import javax.swing.Timer;
 import javax.swing.border.LineBorder;
 
 
-public class _03Game_H extends JFrame {
+public class _03GameHost extends JFrame {
+	private int port;
+	private ServerSocket serverSocket = null;
+	private BufferedWriter out;
+	private Thread acceptThread = null;
 
 	private JLabel labelLogo, labelAnswerLogo, timerLabel, remainingTurns;
 	private JTextArea userInfoDisplay, t_questionDisplay, t_userAnswerDisplay, rulesTextArea;
 	private JButton b_send, s_button;
 	private String selectedCheckbox, secretAnswer, hint;
 
-	private JTextField t_Input;
+	private JTextField t_input;
 	private JScrollPane scrollPane;
 	private Timer timer;
 
@@ -48,12 +54,9 @@ public class _03Game_H extends JFrame {
 	private int count = 30; // 초기 카운트 값
 	private int userCount = 0;
 
-	private SimpleChatServer server;
 
-
-	public _03Game_H() {
+	public _03GameHost(int port) {
 		super("네프 메인 게임 화면 구성");
-
 		setSize(1000, 700);
 		setLocationRelativeTo(null);
 		setResizable(false);
@@ -61,12 +64,9 @@ public class _03Game_H extends JFrame {
 
 		setLayout(new GridBagLayout());
 		buildGUI();
-
 		setVisible(true);
-
-		server = new SimpleChatServer(54321); // SimpleChatServer 객체 생성
-		server.startServer(); // startServer() 호출
-
+		
+		this.port = port;
 	}
 
 
@@ -98,6 +98,7 @@ public class _03Game_H extends JFrame {
 		add(thirdDisplay, gbc);
 
 	}
+	
 
 
 	private JPanel first_Display() {
@@ -186,18 +187,34 @@ public class _03Game_H extends JFrame {
 	private JPanel input_Display() {
 		JPanel p = new JPanel(new BorderLayout());
 
-		t_Input = new JTextField(18);
+		t_input = new JTextField(18);
 		b_send = new JButton("보내기");
 		b_send.addActionListener(e -> {
 			// processAnswer(); // 정답 처리 메서드 호출
-			t_Input.setText("");
+			t_input.setText("");
 		});
 		b_send.setPreferredSize(new Dimension(b_send.getPreferredSize().width, 40));
 
-		p.add(t_Input, BorderLayout.CENTER);
+		p.add(t_input, BorderLayout.CENTER);
 		p.add(b_send, BorderLayout.EAST);
 
 		return p;
+	}
+	
+	private void sendMessage(String message) {
+	    if (message.isEmpty()) return;
+
+	    try {
+	        out.write(message + "\n");
+	        out.flush();
+
+	        t_questionDisplay.append("나: " + message + "\n");
+	    } catch (IOException e) {
+	        System.err.println("클라이언트 일반 전송 오류> " + e.getMessage());
+	        System.exit(-1);
+	    }
+
+	    t_questionDisplay.setText("");
 	}
 
 
@@ -241,7 +258,7 @@ public class _03Game_H extends JFrame {
 
 		});
 
-		JPanel userAnswerPanel = user_answer_Display();
+		JPanel userAnswerPanel = user_answer_Display(hint);
 		third.add(userAnswerPanel, BorderLayout.CENTER);
 		third.add(s_button, BorderLayout.SOUTH);
 		third.add(labelAnswerLogo, BorderLayout.NORTH);
@@ -251,15 +268,16 @@ public class _03Game_H extends JFrame {
 
 
 	// (3)_1 실행자가 적은 정답 단어 출력되는 공간 지정
-	private JPanel user_answer_Display() {
-		JPanel p = new JPanel(new BorderLayout());
+	private JPanel user_answer_Display(String msg) {
+	    JPanel p = new JPanel(new BorderLayout());
 
-		t_userAnswerDisplay = new JTextArea();
-		t_userAnswerDisplay.setEditable(false);
+	    t_userAnswerDisplay = new JTextArea();
+	    t_userAnswerDisplay.setEditable(false);
+	    t_userAnswerDisplay.append(msg + "\n");
 
-		p.add(new JScrollPane(t_userAnswerDisplay), BorderLayout.CENTER);
+	    p.add(new JScrollPane(t_userAnswerDisplay), BorderLayout.CENTER);
 
-		return p;
+	    return p;
 	}
 
 	// // (3)_2 실행자가 입력한 단어 출력
@@ -286,40 +304,39 @@ public class _03Game_H extends JFrame {
 
 
 	public JPanel updateTimer() {
-		JPanel p = new JPanel(new BorderLayout());
+	    JPanel p = new JPanel(new BorderLayout());
 
-		remainingTurns = new JLabel("남은 횟수: ");
-		remainingTurns.setBounds(30, 100, 200, 50);
-		remainingTurns.setFont(new Font("고딕", Font.PLAIN, 20));
+	    remainingTurns = new JLabel("남은 횟수: ");
+	    remainingTurns.setBounds(30, 100, 200, 50);
+	    remainingTurns.setFont(new Font("고딕", Font.PLAIN, 20));
 
-		JLabel timerLabel = new JLabel();
-		timerLabel.setFont(new Font("Arial", Font.PLAIN, 30));
-		timerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+	    JLabel timerLabel = new JLabel();
+	    timerLabel.setFont(new Font("Arial", Font.PLAIN, 30));
+	    timerLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-		timer = new Timer(1000, e -> {
-			if (timerStarted && --count > 0) {
-				timerLabel.setText(Integer.toString(count));
-			} else {
-				timer.stop();
-				timerLabel.setText("Next Question");
-				// 타이머가 종료될 때 두 번째 힌트를 받는 부분 추가
-				String secondHint = JOptionPane.showInputDialog(null, "두 번째 힌트를 입력하세요.");
-				if (secondHint != null && !secondHint.isEmpty()) {
-					printDisplay("두 번째 힌트: " + secondHint);
-				} else {
-					JOptionPane.showMessageDialog(null, "두 번째 힌트를 입력하세요.");
-				}
+	    timer = new Timer(1000, e -> {
+	        if (timerStarted && count > 0) {
+	            timerLabel.setText(Integer.toString(count));
+	            count--;
+	        } else {
+	            timer.stop();
+	            timerLabel.setText("Next Question");
+	            // 타이머가 종료될 때 두 번째 힌트를 받는 부분 추가
+	            String secondHint = JOptionPane.showInputDialog(null, "두 번째 힌트를 입력하세요.");
+	            if (secondHint != null && !secondHint.isEmpty()) {
+	                printDisplay("두 번째 힌트: " + secondHint);
+	            } else {
+	                JOptionPane.showMessageDialog(null, "두 번째 힌트를 입력하세요.");
+	            }
+	        }
+	    });
 
-			}
+	    timerLabel.setText(Integer.toString(count));
 
-		});
+	    p.add(remainingTurns, BorderLayout.WEST);
+	    p.add(timerLabel, BorderLayout.EAST);
 
-		timerLabel.setText(Integer.toString(count));
-
-		p.add(remainingTurns, BorderLayout.WEST);
-		p.add(timerLabel, BorderLayout.EAST);
-
-		return p;
+	    return p;
 	}
 
 
@@ -360,11 +377,9 @@ public class _03Game_H extends JFrame {
 	class ImagePanel extends JPanel {
 		private ImageIcon imageIcon;
 
-
 		public ImagePanel(String imagePath) {
 			imageIcon = new ImageIcon(getClass().getResource(imagePath));
 		}
-
 
 		@Override
 		protected void paintComponent(Graphics g) {
@@ -372,12 +387,100 @@ public class _03Game_H extends JFrame {
 			g.drawImage(imageIcon.getImage(), 0, 0, getWidth(), getHeight(), this);
 		}
 	}
+	
+	private void startServer() {
+	    try {
+	        serverSocket = new ServerSocket(port);
+	        printDisplay("서버가 시작되었습니다.");
 
+	        acceptThread = new Thread(() -> {
+	            while (acceptThread == Thread.currentThread()) {
+	                Socket clientSocket = null;
+	                try {
+	                    clientSocket = serverSocket.accept();
+	                    t_userAnswerDisplay.append("클라이언트가 연결되었습니다.\n");
+
+	                    ClientHandler cHandler = new ClientHandler(clientSocket);
+	                    cHandler.start();
+	                } catch (IOException e) {
+	                    e.printStackTrace();
+	                }
+	            }
+	        });
+
+	        acceptThread.start();
+
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+	}
+
+	
+	
+	private class ClientHandler extends Thread {
+	    private Socket clientSocket;
+	    private BufferedWriter clientOut;
+
+	    public ClientHandler(Socket clientSocket) {
+	        this.clientSocket = clientSocket;
+	    }
+
+	    private void initializeStreams(Socket cs) {
+	        try {
+	            BufferedReader in = new BufferedReader(new InputStreamReader(cs.getInputStream(), "UTF-8"));
+	            clientOut = new BufferedWriter(new OutputStreamWriter(cs.getOutputStream(), "UTF-8"));
+	        } catch (IOException e) {
+	            printDisplay("서버 스트림 초기화 오류> " + e.getMessage());
+	        }
+	    }
+
+	    private void receiveMessages(Socket cs) {
+	        try {
+	            BufferedReader in = new BufferedReader(new InputStreamReader(cs.getInputStream(), "UTF-8"));
+
+	            String message;
+	            while ((message = in.readLine()) != null) {
+	                printDisplay("클라이언트 메세지: " + message);
+	            }
+
+	            printDisplay("클라이언트가 연결을 종료했습니다.");
+	        } catch (IOException e) {
+	            printDisplay("서버 읽기 오류> " + e.getMessage());
+	        } finally {
+	            try {
+	                cs.close();
+	            } catch (IOException e) {
+	                System.err.println("서버 닫기 오류> " + e.getMessage());
+	                System.exit(-1);
+	            }
+	        }
+	    }
+
+	    private void sendMessage(String message) {
+	        if (message.isEmpty()) return;
+
+	        try {
+	            clientOut.write(message + "\n");
+	            clientOut.flush();
+	        } catch (IOException e) {
+	            System.err.println("클라이언트 일반 전송 오류> " + e.getMessage());
+	            System.exit(-1);
+	        }
+	    }
+
+	    public void run() {
+	        initializeStreams(clientSocket);
+	        receiveMessages(clientSocket);
+	    }
+	}
+	
 
 	public static void main(String[] args) {
-		SwingUtilities.invokeLater(() -> {
+	    int port = 54321;
 
-			new _03Game_H();
-		});
+	    SwingUtilities.invokeLater(() -> {
+	        _03GameHost server = new _03GameHost(port);
+	        server.startServer(); // 서버 시작 메서드 호출
+	    });
 	}
 }
