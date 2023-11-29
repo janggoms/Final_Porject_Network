@@ -56,7 +56,7 @@ public class _03GamePlayer extends JFrame {
 	private boolean timerStarted = false;
 
 	private int count = 30; // 초기 카운트 값
-	private int userCount = 0;
+	private static int userCount = 0;
 
 	private Socket socket;
 	private Writer out;
@@ -129,18 +129,23 @@ public class _03GamePlayer extends JFrame {
 
 
 	// (1)_1 유저 입장정보 출력되는 공간 지정
-	private JPanel user_Info_Display() {
-		int userNumber = ++userCount;
-		JPanel p = new JPanel(new BorderLayout());
+    private JPanel user_Info_Display() {
+        int userNumber = ++userCount;  // userCount를 증가시켜 사용자 번호 부여
+        JPanel p = new JPanel(new BorderLayout());
 
-		userInfoDisplay = new JTextArea();
-		userInfoDisplay.setEditable(false);
-		userInfoDisplay.setFont(new Font("Arial", Font.PLAIN, 20));
-		userInfoDisplay.append("User" + userNumber + "\n\n");
-		p.add(new JScrollPane(userInfoDisplay), BorderLayout.CENTER);
+        userInfoDisplay = new JTextArea();
+        userInfoDisplay.setEditable(false);
+        userInfoDisplay.setFont(new Font("Arial", Font.PLAIN, 20));
 
-		return p;
-	}
+        // 모든 사용자 목록을 표시
+        for (int i = 1; i <= userCount; i++) {
+            userInfoDisplay.append("User" + i + "\n\n");
+        }
+
+        p.add(new JScrollPane(userInfoDisplay), BorderLayout.CENTER);
+
+        return p;
+    }
 
 
 	// (2) 출제자의 질문이 적히는 센터 화면
@@ -390,29 +395,28 @@ public class _03GamePlayer extends JFrame {
 	}
 
 
-	private void connectToServer() {
-		try {
-			socket = new Socket(serverAddress, serverPort);
-			out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
-			in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
-			userCount++;
-			int currentUserNumber = userCount;
-			userInfoDisplay.append("User" + currentUserNumber + "\n\n");
-			receiveThread = new Thread(() -> {
-				while (receiveThread == Thread.currentThread()) {
-					receiveMessage();
-				}
-
-			});
-			receiveThread.start();
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.err.println("클라이언트 연결 오류> " + e.getMessage());
-			JOptionPane.showMessageDialog(null, "서버에 연결할 수 없습니다. 프로그램을 종료합니다.");
-			System.exit(-1);
-		}
-
-	}
+    private void connectToServer() {
+        try {
+            socket = new Socket(serverAddress, serverPort);
+            out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
+//            userCount++;
+//            int currentUserNumber = userCount;
+//            
+//            userInfoDisplay.append("User" + currentUserNumber + "\n\n");
+            receiveThread = new Thread(() -> {
+                while (receiveThread == Thread.currentThread()) {
+                    receiveMessage();
+                }
+            });
+            receiveThread.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("클라이언트 연결 오류> " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "서버에 연결할 수 없습니다. 프로그램을 종료합니다.");
+            System.exit(-1);
+        }
+    }
 
 
 	private void sendMessage() {
