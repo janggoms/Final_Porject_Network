@@ -36,7 +36,7 @@ import javax.swing.border.LineBorder;
 
 
 public class _03GamePlayer extends JFrame {
-	
+
 	private String serverAddress;
 	private int serverPort;
 
@@ -54,14 +54,14 @@ public class _03GamePlayer extends JFrame {
 
 	private boolean showRules = true;
 	private boolean timerStarted = false;
-	
+
 	private int count = 30; // 초기 카운트 값
 	private int userCount = 0;
-	
+
 	private Socket socket;
 	private Writer out;
 	private Reader in;
-	
+
 	private Thread receiveThread = null;
 
 
@@ -75,11 +75,11 @@ public class _03GamePlayer extends JFrame {
 		setLayout(new GridBagLayout());
 		buildGUI();
 		setVisible(true);
-		
+
 		this.serverAddress = serverAddress;
 		this.serverPort = serverPort;
-		
-        connectToServer(); // 서버에 연결
+
+		connectToServer(); // 서버에 연결
 	}
 
 
@@ -112,6 +112,7 @@ public class _03GamePlayer extends JFrame {
 
 	}
 
+
 	private JPanel first_Display() {
 		JPanel first = new JPanel();
 		first.setLayout(new BorderLayout());
@@ -125,6 +126,7 @@ public class _03GamePlayer extends JFrame {
 
 		return first;
 	}
+
 
 	// (1)_1 유저 입장정보 출력되는 공간 지정
 	private JPanel user_Info_Display() {
@@ -157,6 +159,7 @@ public class _03GamePlayer extends JFrame {
 
 		return second;
 	}
+
 
 	// (2)_1 질문들이 출력되는 공간 지정
 	private JPanel main_Question_Display() {
@@ -191,6 +194,7 @@ public class _03GamePlayer extends JFrame {
 		return p;
 	}
 
+
 	// (2)_2 출제자나 실행자가 질문과 정답을 적는 공간 지정
 	private JPanel input_Display() {
 		JPanel p = new JPanel(new BorderLayout());
@@ -216,6 +220,7 @@ public class _03GamePlayer extends JFrame {
 
 		return p;
 	}
+
 
 	private JPanel third_Display() {
 		JPanel third = new JPanel();
@@ -249,7 +254,8 @@ public class _03GamePlayer extends JFrame {
 
 		return third;
 	}
-	
+
+
 	private _03GameHost getGameFrame() {
 		for (Frame frame : Frame.getFrames()) {
 			if (frame instanceof _03GameHost) { return (_03GameHost) frame; }
@@ -258,6 +264,7 @@ public class _03GamePlayer extends JFrame {
 
 		return null;
 	}
+
 
 	// (3)_1 실행자가 적은 정답 단어 출력되는 공간 지정
 	private JPanel user_answer_Display() {
@@ -318,7 +325,9 @@ public class _03GamePlayer extends JFrame {
 				} else {
 					JOptionPane.showMessageDialog(null, "두 번째 힌트를 입력하세요.");
 				}
+
 			}
+
 		});
 
 		timerLabel.setText(Integer.toString(count));
@@ -334,14 +343,17 @@ public class _03GamePlayer extends JFrame {
 		rulesTextArea.append(message + "\n");
 	}
 
+
 	public void setSecretAnswer(String answer) {
 		this.secretAnswer = answer;
 	}
+
 
 	public void setRemainingTurns(String value) {
 		selectedCheckbox = value;
 		remainingTurns.setText("남은 횟수: " + selectedCheckbox);
 	}
+
 
 	public void setUserReady(int userNumber, boolean isReady) {
 		if (userNumber >= 0 && userNumber < userReadyList.size()) {
@@ -351,6 +363,7 @@ public class _03GamePlayer extends JFrame {
 
 	}
 
+
 	private void checkAllUsersReady() {
 		boolean allReady = !userReadyList.contains(false);
 		if (allReady) {
@@ -358,6 +371,7 @@ public class _03GamePlayer extends JFrame {
 		}
 
 	}
+
 
 	class ImagePanel extends JPanel {
 		private ImageIcon imageIcon;
@@ -374,59 +388,67 @@ public class _03GamePlayer extends JFrame {
 			g.drawImage(imageIcon.getImage(), 0, 0, getWidth(), getHeight(), this);
 		}
 	}
-	
-	private void connectToServer() {
-	    try {
-	        socket = new Socket(serverAddress, serverPort);
-	        out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
-	        in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
 
-	        receiveThread = new Thread(() -> {
-	            while (receiveThread == Thread.currentThread()) {
-	                receiveMessage();
-	            }
-	        });
-	        receiveThread.start();
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	        System.err.println("클라이언트 연결 오류> " + e.getMessage());
-	        JOptionPane.showMessageDialog(null, "서버에 연결할 수 없습니다. 프로그램을 종료합니다.");
-	        System.exit(-1);
-	    }
+
+	private void connectToServer() {
+		try {
+			socket = new Socket(serverAddress, serverPort);
+			out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
+			in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
+			userCount++;
+			int currentUserNumber = userCount;
+			userInfoDisplay.append("User" + currentUserNumber + "\n\n");
+			receiveThread = new Thread(() -> {
+				while (receiveThread == Thread.currentThread()) {
+					receiveMessage();
+				}
+
+			});
+			receiveThread.start();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.err.println("클라이언트 연결 오류> " + e.getMessage());
+			JOptionPane.showMessageDialog(null, "서버에 연결할 수 없습니다. 프로그램을 종료합니다.");
+			System.exit(-1);
+		}
+
 	}
+
 
 	private void sendMessage() {
-	    String message = t_input.getText();
-	    if (message.isEmpty()) return;
+		String message = t_input.getText();
+		if (message.isEmpty()) return;
 
-	    try {
-	        out.write(message + "\n");
-	        out.flush(); // 버퍼 비우기
+		try {
+			out.write(message + "\n");
+			out.flush(); // 버퍼 비우기
 
-	        t_userAnswerDisplay.append("나: " + message + "\n");
-	    } catch (IOException e) {
-	        System.err.println("클라이언트 일반 전송 오류> " + e.getMessage());
-	        JOptionPane.showMessageDialog(null, "메시지를 전송할 수 없습니다.");
-	        System.exit(-1);
-	    }
+			t_userAnswerDisplay.append("나: " + message + "\n");
+		} catch (IOException e) {
+			System.err.println("클라이언트 일반 전송 오류> " + e.getMessage());
+			JOptionPane.showMessageDialog(null, "메시지를 전송할 수 없습니다.");
+			System.exit(-1);
+		}
 
-	    t_input.setText("");
+		t_input.setText("");
 	}
 
-    private void receiveMessage() {
-        try {
-            String inMsg = ((BufferedReader) in).readLine();
-            t_userAnswerDisplay.append("서버:\t" + inMsg + "\n");
-        } catch (IOException e) {
-            System.out.println("클라이언트 일반 수신 오류> " + e.getMessage());
-        }
-    }
+
+	private void receiveMessage() {
+		try {
+			String inMsg = ((BufferedReader) in).readLine();
+			t_userAnswerDisplay.append("서버:\t" + inMsg + "\n");
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, "클라이언트 일반 수신 오류> " + e.getMessage());
+		}
+
+	}
 
 
 	public static void main(String[] args) {
 		String serverAddress = "localhost";
 		int serverPort = 54321;
-		
+
 		SwingUtilities.invokeLater(() -> {
 		    new _03GamePlayer(serverAddress, serverPort);
 		});
