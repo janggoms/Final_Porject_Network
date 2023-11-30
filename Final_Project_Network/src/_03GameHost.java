@@ -409,6 +409,7 @@ public class _03GameHost extends JFrame {
 						clientSocket = serverSocket.accept();
 						userCount++;
 						int currentUserNumber = userCount;
+						
 						t_userAnswerDisplay.append("클라이언트가 연결되었습니다.\n");
 						userInfoDisplay.append("User" + currentUserNumber + "\n\n");
 						ClientHandler cHandler = new ClientHandler(clientSocket);
