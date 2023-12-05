@@ -61,7 +61,8 @@ public class _02Room extends JFrame {
 		p.setBounds(0, 0, 700, 700); // 첫 번째 패널 위치 및 크기 설정
 		p.setLayout(null);
 
-		label = new JLabel("현재 생성된 방");
+		label = new JLabel(""
+		    + "현재 생성된 방");
 		label.setBounds(100, 10, 200, 100);
 		label.setFont(new Font("굴림", Font.BOLD, 25));
 		p.add(label);
@@ -139,48 +140,48 @@ public class _02Room extends JFrame {
 
 	// 방생성 버튼을 누르면 화면에 해당 방을 입장할 수 있는 버튼이 나타남
 	private void createRoomButton() {
-	    String roomNameText = roomName.getText().trim();
-	    if (!roomNameText.isEmpty()) {
-	        JButton newRoomButton = new JButton(roomNameText);
-	        roomButtons.add(newRoomButton);
-	        refreshRoomButtons(newRoomButton);
-	    }
+		String roomNameText = roomName.getText().trim();
+		if (!roomNameText.isEmpty()) {
+			JButton newRoomButton = new JButton(roomNameText);
+			roomButtons.add(newRoomButton);
+			refreshRoomButtons(newRoomButton);
+		}
+
 	}
 
 
 	// 방 목록 업데이트. 생성한 방이 고정된 좌표값에 대입됨
 	private void refreshRoomButtons(JButton newRoomButton) {
-	    JPanel firstPanel = (JPanel) getContentPane().getComponent(0);
-	    firstPanel.removeAll();
+		JPanel firstPanel = (JPanel) getContentPane().getComponent(0);
+		firstPanel.removeAll();
 
-	    label = new JLabel("현재 생성된 방");
-	    label.setBounds(100, 10, 200, 100);
-	    label.setFont(new Font("굴림", Font.BOLD, 25));
-	    firstPanel.add(label);
+		label = new JLabel("현재 생성된 방");
+		label.setBounds(100, 10, 200, 100);
+		label.setFont(new Font("굴림", Font.BOLD, 25));
+		firstPanel.add(label);
 
-	    int y = 100;
-	    for (JButton roomButton : roomButtons) {
-	        roomButton.setBounds(100, y, 500, 60);
-	        y += 70;
-	        firstPanel.add(roomButton);
+		int y = 100;
+		for (JButton roomButton : roomButtons) {
+			roomButton.setBounds(100, y, 500, 60);
+			y += 70;
+			firstPanel.add(roomButton);
 
-	        roomButton.addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
-	                int port = 54321;
-	                String serverAddress = "localhost";
-	                _03GamePlayer gamePlayer = new _03GamePlayer(serverAddress, port);
-	                gamePlayer.setRemainingTurns(remainingTurns);
-	                gamePlayer.setVisible(true);
-	                // dispose();
-	            }
-	        });
-	    }
+			roomButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					int serverport = 54321;
+					String serverAddress = "localhost";
+					_03GamePlayer gamePlayer = new _03GamePlayer(serverAddress, serverport);
+					gamePlayer.setRemainingTurns(remainingTurns);
+					gamePlayer.setVisible(true);
+					// dispose();
+				}
+			});
+		}
 
-	    revalidate();
-	    repaint();
+		revalidate();
+		repaint();
 	}
-
 
 
 	public static void main(String[] args) {
