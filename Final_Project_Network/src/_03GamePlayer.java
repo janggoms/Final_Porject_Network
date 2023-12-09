@@ -1,5 +1,4 @@
 // 게임 실행자 클래스
-// 진행자가 적는 질문에 대한 답을 추리해서 단어를 입력함
 
 import java.awt.BorderLayout;
 import java.awt.Color;
