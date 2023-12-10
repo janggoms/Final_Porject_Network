@@ -44,7 +44,7 @@ public class _03GamePlayer extends JFrame {
    private JLabel labelAnswerLogo, timerLabel, remainingTurnsLabel;
    private JTextArea userInfoDisplay, t_userAnswerDisplay, rulesTextArea;
    private JButton b_send, r_button;
-   private String selectedCheckbox, secretAnswer;
+   private String secretAnswer;
 
    private JTextField t_input;
    private JScrollPane scrollPane;
@@ -53,9 +53,6 @@ public class _03GamePlayer extends JFrame {
    private List<Boolean> userReadyList = new ArrayList<>(); // 유저들의 준비 여부를 저장하는 리스트 추가
    private ArrayList<String> answers = new ArrayList<>(); // 참가자들의 정답을 저장할 리스트
 
-   private boolean timerStarted = false;
-
-   private int count = 30; // 초기 카운트 값
    private static int userCount = 1;
 	private int remainingTurns1;
 
@@ -64,8 +61,8 @@ public class _03GamePlayer extends JFrame {
    private Reader in;
 
    private Thread receiveThread = null;
-//   private ServerListener serverListener;
 
+   private boolean isReady = false;
 
    public _03GamePlayer(String serverAddress, int serverPort) {
       super("네프 메인 게임 화면 구성");
@@ -82,7 +79,6 @@ public class _03GamePlayer extends JFrame {
       this.serverPort = serverPort;
 
       connectToServer(); // 서버에 연결
-//      startServerListener(); // 서버로부터의 메시지를 수신하는 리스너 시작
    }
 
 
@@ -104,6 +100,7 @@ public class _03GamePlayer extends JFrame {
       gbc.gridx = 1;
       gbc.gridy = 0;
       gbc.weightx = 2;
+      gbc.weighty = 1;
       add(secondDisplay, gbc);
 
       JPanel thirdDisplay = third_Display();
@@ -111,6 +108,7 @@ public class _03GamePlayer extends JFrame {
       gbc.gridx = 2;
       gbc.gridy = 0;
       gbc.weightx = 1;
+      gbc.weighty = 1;
       add(thirdDisplay, gbc);
 
    }
@@ -156,6 +154,7 @@ public class _03GamePlayer extends JFrame {
          labelAnswerLogo = new JLabel("정답 정보");
          labelAnswerLogo.setFont(new Font("NamunGothic", Font.ITALIC, 30));
          labelAnswerLogo.setHorizontalAlignment(SwingConstants.CENTER);
+         labelAnswerLogo.setPreferredSize(new Dimension(150, 40));
          labelAnswerLogo.setEnabled(false);
 
          r_button = new JButton("준비하기");
@@ -163,12 +162,16 @@ public class _03GamePlayer extends JFrame {
          r_button.setPreferredSize(new Dimension(r_button.getPreferredSize().width, 40));
          r_button.addActionListener(e -> {
         	    _03GameHost gameFrame = getGameFrame();
-        	    if (gameFrame != null) {
-        	        gameFrame.setUserReady(userCount - 1, true); // 유저가 준비했음을 전달
-        	    }
-    			rulesTextArea.setText(""); // 규칙 내용을 제거
-        	    sendMessage(); // "준비하기" 버튼을 눌렀음을 서버에 전송
-        	});
+                if (gameFrame != null && !isReady) {
+                    setUserReady(userCount - 1, true);
+                    r_button.setEnabled(false);
+                    isReady = true;
+                    sendMessage();
+                    sendMessageToServerIfAllReady();
+                }
+                rulesTextArea.setText(""); // Clear the rules content
+            });
+         
          JPanel userAnswerPanel = user_answer_Display();
 
          third.add(userAnswerPanel, BorderLayout.CENTER);
@@ -185,6 +188,7 @@ public class _03GamePlayer extends JFrame {
 		remainingTurnsLabel = new JLabel("남은 횟수: " + remainingTurns1); // 변경
 		remainingTurnsLabel.setBounds(30, 100, 200, 50);
 		remainingTurnsLabel.setFont(new Font("고딕", Font.PLAIN, 20));
+	      remainingTurnsLabel.setPreferredSize(new Dimension(150, 40));
 
 		timerLabel = new JLabel();
 		timerLabel.setFont(new Font("Arial", Font.PLAIN, 30));
@@ -233,13 +237,12 @@ public class _03GamePlayer extends JFrame {
 
    // (1)_1 유저 입장정보 출력되는 공간 지정
    private JPanel user_Info_Display() {
-      int userNumber = ++userCount; // userCount를 증가시켜 사용자 번호 부여
+      ++userCount;
       JPanel p = new JPanel(new BorderLayout());
 
       userInfoDisplay = new JTextArea();
       userInfoDisplay.setEditable(false);
       userInfoDisplay.setFont(new Font("Arial", Font.PLAIN, 20));
-      // userInfoDisplay.append("User" + userNumber + "\n\n");
 
       p.add(new JScrollPane(userInfoDisplay), BorderLayout.CENTER);
 
@@ -253,6 +256,7 @@ public class _03GamePlayer extends JFrame {
 
       rulesTextArea = new JTextArea();
       rulesTextArea.setEditable(false);
+      rulesTextArea.setWrapStyleWord(true);
       rulesTextArea.setLineWrap(true);
       rulesTextArea.setText(
           "\n\n\n\n\n\n\n규칙\r\n\n"
@@ -311,6 +315,9 @@ public class _03GamePlayer extends JFrame {
 
       t_userAnswerDisplay = new JTextArea();
       t_userAnswerDisplay.setEditable(false);
+      t_userAnswerDisplay.setWrapStyleWord(true);
+      t_userAnswerDisplay.setLineWrap(true);
+      t_userAnswerDisplay.setPreferredSize(new Dimension(150, 200));
 
       p.add(new JScrollPane(t_userAnswerDisplay), BorderLayout.CENTER);
 
@@ -318,7 +325,7 @@ public class _03GamePlayer extends JFrame {
    }
 
 	public void setRemainingTurns(String value) {
-		selectedCheckbox = value.trim();
+		value.trim();
 		remainingTurns1 = Integer.parseInt(value.trim());
 		remainingTurnsLabel.setText("남은 횟수: " + remainingTurns1);
 	}
@@ -334,24 +341,25 @@ public class _03GamePlayer extends JFrame {
 
 	}
 	
-	private void printUserInfoDisplay(String message) {
-		userInfoDisplay.append(message + "\n");
-		userInfoDisplay.setCaretPosition(userInfoDisplay.getDocument().getLength());
-	}
-
-
-   public void setSecretAnswer(String answer) {
+	public void setSecretAnswer(String answer) {
          this.secretAnswer = answer;
       }
 
 
-   public void setUserReady(int userNumber, boolean isReady) {
-      if (userNumber >= 0 && userNumber < userReadyList.size()) {
-         userReadyList.set(userNumber, isReady);
-         checkAllUsersReady();
-      }
-
-   }
+   public void setUserReady(int userCount, boolean isReady) {
+	    if (userCount >= 0 && userCount < userReadyList.size()) {
+	        userReadyList.set(userCount, isReady);
+	        sendMessageToServerIfAllReady();
+	    }
+	}
+   
+   private void sendMessageToServerIfAllReady() {
+	    boolean allReady = !userReadyList.contains(false);
+	    if (allReady) {
+	        sendMessageToServer("AllReady");
+	    }
+	}
+ 
    
    // (3)_2 실행자가 입력한 단어 출력
    private void processAnswer() {
@@ -372,15 +380,6 @@ public class _03GamePlayer extends JFrame {
       } else {
          printHintDisplay("오답입니다."); // 화면에 오답 메시지 출력
          answers.add(userAnswer); // 오답일 경우 리스트에 추가 (선택사항)
-      }
-
-   }
-
-
-   private void checkAllUsersReady() {
-      boolean allReady = !userReadyList.contains(false);
-      if (allReady) {
-         r_button.setEnabled(true); // 모든 유저가 준비했을 때 시작 버튼 활성화
       }
 
    }
@@ -411,8 +410,6 @@ public class _03GamePlayer extends JFrame {
 	        for (int i = 1; i <= userCount; i++) {
 	            userInfoDisplay.append("User" + i + "\n\n");
 	        }
-
-	        // 여기서 updateConnectedUserCount 호출
 	        updateConnectedUserCount(userCount);
 
 	        receiveThread = new Thread(() -> {
@@ -433,20 +430,25 @@ public class _03GamePlayer extends JFrame {
 
 
    private void sendMessage() {
-	   String message = t_input.getText();
+	    String message = "User" + userCount + ": " + t_input.getText() + "\n";
 	    if (!message.isEmpty()) {
 	        try {
-	            // 닉네임과 함께 메시지 전송
-	            ((BufferedWriter) out).write("User" + userCount + ": " + message + "\n");
+	            ((BufferedWriter) out).write(message);
 	            out.flush();
-
-	            printUserAnswerDisplay("나: " + message);
 	        } catch (IOException e) {
 	            System.err.println("클라이언트 메시지 전송 오류> " + e.getMessage());
 	        }
 	    }
-
 	    t_input.setText("");
+	}
+   
+   private void sendMessageToServer(String message) {
+	    try {
+	        ((BufferedWriter) out).write(message + "\n");
+	        out.flush();
+	    } catch (IOException e) {
+	        System.err.println("클라이언트 메시지 전송 오류> " + e.getMessage());
+	    }
 	}
 
    
