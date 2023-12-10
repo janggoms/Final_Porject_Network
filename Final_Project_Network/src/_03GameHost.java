@@ -268,7 +268,11 @@ public class _03GameHost extends JFrame {
 		} else {
 			JOptionPane.showMessageDialog(null, "이미 정답을 입력했거나 힌트를 모두 사용했습니다.");
 		}
-
+		
+	    if (allUsersReady) {
+	        s_button.setEnabled(true);
+	        broadcastMessage("AllReady");
+	    }
 	}
 
 
@@ -379,10 +383,10 @@ public class _03GameHost extends JFrame {
   
    
    private void broadcastMessage(String message) {
-       for (ClientHandler c : clientHandlers) {
-           c.sendMessage(message);
-       }
-   }
+	    for (ClientHandler c : clientHandlers) {
+	        c.sendMessage(message);
+	    }
+	}
 
    // 배경이미지
    class ImagePanel extends JPanel {
@@ -452,6 +456,7 @@ public class _03GameHost extends JFrame {
       public ClientHandler(Socket clientSocket, BufferedWriter out) {
           this.clientSocket = clientSocket;
           this.out = out;
+          setUserReady(users.size() - 1, false);
       }
       
       private void receiveMessages(Socket clientSocket) {
@@ -487,13 +492,14 @@ public class _03GameHost extends JFrame {
 
     	        // 클라이언트에게 모든 유저의 준비 상태를 알리는 메시지 전송
     	        sendToAllClients("ReadyStatus:" + allUsersReady);
-    	        
-    	        if (allUsersReady && !timerStarted) {
+
+    	        if (allUsersReady) {
     	            s_button.setEnabled(true);
     	            broadcastMessage("AllReady");
     	        }
     	    }
     	}
+
       
 
       private void sendMessage(String message) {

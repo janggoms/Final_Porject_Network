@@ -162,15 +162,18 @@ public class _03GamePlayer extends JFrame {
          r_button.setPreferredSize(new Dimension(r_button.getPreferredSize().width, 40));
          r_button.addActionListener(e -> {
         	    _03GameHost gameFrame = getGameFrame();
-                if (gameFrame != null && !isReady) {
-                    setUserReady(userCount - 1, true);
-                    r_button.setEnabled(false);
-                    isReady = true;
-                    sendMessage();
-                    sendMessageToServerIfAllReady();
-                }
-                rulesTextArea.setText(""); // Clear the rules content
-            });
+        	    if (gameFrame != null && !isReady) {
+        	        setUserReady(userCount - 1, true);
+        	        r_button.setEnabled(false);
+        	        isReady = true;
+        	        sendMessage();
+        	        sendMessageToServerIfAllReady();
+        	    }
+        	    rulesTextArea.setText(""); // Clear the rules content
+
+        	    // 클라이언트가 준비 상태를 서버에 전송
+        	    sendMessageToServer("ReadyStatus:" + (userCount - 1) + ":true");
+        	});
          
          JPanel userAnswerPanel = user_answer_Display();
 
@@ -207,6 +210,14 @@ public class _03GamePlayer extends JFrame {
 		remainingTurnsLabel.setText("남은 횟수: " + remainingTurns1);
 
 		timerLabel.setText("10"); // 시작할 타이머 초기 값 (여기서는 10으로 설정되었습니다)
+		
+	    if (remainingTurns1 > 0) {
+	        b_send.setEnabled(true);
+	        t_input.setEnabled(true);
+	    } else {
+	        b_send.setEnabled(false);
+	        t_input.setEnabled(false);
+	    }
 
 		timer = new Timer(1000, ev -> {
 			int remainingTime = Integer.parseInt(timerLabel.getText());
@@ -299,7 +310,6 @@ public class _03GamePlayer extends JFrame {
 	         @Override
 	         public void actionPerformed(ActionEvent e) {
 	            sendMessage();
-	            receiveMessage();
 	         }
 	      });
 	      p.add(t_input, BorderLayout.CENTER);
@@ -359,7 +369,7 @@ public class _03GamePlayer extends JFrame {
 	        sendMessageToServer("AllReady");
 	    }
 	}
- 
+
    
    // (3)_2 실행자가 입력한 단어 출력
    private void processAnswer() {
@@ -435,6 +445,8 @@ public class _03GamePlayer extends JFrame {
 	        try {
 	            ((BufferedWriter) out).write(message);
 	            out.flush();
+		        t_input.setEnabled(false);
+	            b_send.setEnabled(false); // 메시지를 전송한 후 버튼 비활성화
 	        } catch (IOException e) {
 	            System.err.println("클라이언트 메시지 전송 오류> " + e.getMessage());
 	        }
