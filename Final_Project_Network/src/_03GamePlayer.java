@@ -51,7 +51,6 @@ public class _03GamePlayer extends JFrame {
    private Timer timer;
 
    private List<Boolean> userReadyList = new ArrayList<>(); // 유저들의 준비 여부를 저장하는 리스트 추가
-   private ArrayList<String> answers = new ArrayList<>(); // 참가자들의 정답을 저장할 리스트
 
    private static int userCount = 1;
 	private int remainingTurns1;
@@ -166,15 +165,11 @@ public class _03GamePlayer extends JFrame {
         	        setUserReady(userCount - 1, true);
         	        r_button.setEnabled(false);
         	        isReady = true;
-        	        sendMessage();
         	        sendMessageToServerIfAllReady();
         	    }
         	    rulesTextArea.setText(""); // Clear the rules content
-
-        	    // 클라이언트가 준비 상태를 서버에 전송
-        	    sendMessageToServer("ReadyStatus:" + (userCount - 1) + ":true");
         	});
-         
+
          JPanel userAnswerPanel = user_answer_Display();
 
          third.add(userAnswerPanel, BorderLayout.CENTER);
@@ -191,7 +186,7 @@ public class _03GamePlayer extends JFrame {
 		remainingTurnsLabel = new JLabel("남은 횟수: " + remainingTurns1); // 변경
 		remainingTurnsLabel.setBounds(30, 100, 200, 50);
 		remainingTurnsLabel.setFont(new Font("고딕", Font.PLAIN, 20));
-	      remainingTurnsLabel.setPreferredSize(new Dimension(150, 40));
+	    remainingTurnsLabel.setPreferredSize(new Dimension(150, 40));
 
 		timerLabel = new JLabel();
 		timerLabel.setFont(new Font("Arial", Font.PLAIN, 30));
@@ -370,29 +365,7 @@ public class _03GamePlayer extends JFrame {
 	    }
 	}
 
-   
-   // (3)_2 실행자가 입력한 단어 출력
-   private void processAnswer() {
-      if (secretAnswer != null && !secretAnswer.isEmpty()) {
-         String userAnswer = t_input.getText(); // 사용자가 입력한 정답
-         checkAnswer(userAnswer);
-         printHintDisplay("사용자 입력: " + userAnswer); // 사용자 입력을 JTextArea에 출력
-      } else {
-         printHintDisplay("정답이 설정되지 않았습니다."); // JTextArea에 출력
-      }
-
-   }
-
-
-   public void checkAnswer(String userAnswer) {
-      if (userAnswer.equalsIgnoreCase(secretAnswer)) {
-         printHintDisplay("정답입니다!"); // 화면에 정답 메시지 출력
-      } else {
-         printHintDisplay("오답입니다."); // 화면에 오답 메시지 출력
-         answers.add(userAnswer); // 오답일 경우 리스트에 추가 (선택사항)
-      }
-
-   }
+ 
 
 
    class ImagePanel extends JPanel {
@@ -414,8 +387,6 @@ public class _03GamePlayer extends JFrame {
 	        socket = new Socket(serverAddress, serverPort);
 	        out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
 	        in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
-
-//	        t_userAnswerDisplay.append("User" + userCount + "가 연결되었습니다.\n");
 
 	        for (int i = 1; i <= userCount; i++) {
 	            userInfoDisplay.append("User" + i + "\n\n");
@@ -440,12 +411,20 @@ public class _03GamePlayer extends JFrame {
 
 
    private void sendMessage() {
-	    String message = "User" + userCount + ": " + t_input.getText() + "\n";
+	    String userAnswer = t_input.getText().trim();
+	    String message = "User" + userCount + ": " + userAnswer + "\n";
+
+	    if (isReady) {
+	        checkAnswer(userAnswer);
+	        // 정답을 서버로 전송
+	        sendMessageToServer("ANSWER:" + userAnswer);
+	    }
+
 	    if (!message.isEmpty()) {
 	        try {
 	            ((BufferedWriter) out).write(message);
 	            out.flush();
-		        t_input.setEnabled(false);
+	            t_input.setEnabled(false);
 	            b_send.setEnabled(false); // 메시지를 전송한 후 버튼 비활성화
 	        } catch (IOException e) {
 	            System.err.println("클라이언트 메시지 전송 오류> " + e.getMessage());
@@ -453,6 +432,29 @@ public class _03GamePlayer extends JFrame {
 	    }
 	    t_input.setText("");
 	}
+   
+   private void checkAnswer(String userAnswer) {
+//	    if (isReady) {
+	        if (userAnswer.equalsIgnoreCase(secretAnswer)) {
+	            // 정답을 맞췄을 때의 처리
+	            printUserAnswerDisplay("정답을 맞췄습니다!");
+//	            sendMessageToServer("ANSWER_CORRECT");
+	            
+	            // 정답을 서버로 전송
+	            sendMessageToServer("ANSWER_CORRECT");
+	            
+	            // 여기에서 타이머를 멈춥니다.
+	            if (timer != null && timer.isRunning()) {
+	                timer.stop();
+	            }
+	        } else {
+	            // 틀렸을 때의 처리
+	            printUserAnswerDisplay("틀렸습니다. 다시 시도하세요.");
+//	            sendMessageToServer("ANSWER_INCORRECT");
+	        }
+//	    }
+	}
+
    
    private void sendMessageToServer(String message) {
 	    try {

@@ -27,7 +27,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -44,11 +43,9 @@ public class _03GameHost extends JFrame {
    private JButton s_button;
    private String secretAnswer, hint;
 
-   private JTextField t_input;
    private JScrollPane scrollPane;
    private Timer timer;
 
-   private ArrayList<String> answers = new ArrayList<>(); // 참가자들의 정답을 저장할 리스트
    private List<Boolean> userReadyList = new ArrayList<>(); // 유저들의 준비 여부를 저장하는 리스트 추가
    private boolean allUsersReady = false; 
 
@@ -59,7 +56,6 @@ public class _03GameHost extends JFrame {
    
    private int remainingTurns1;
    private static int userCount = 0;
-
    
    public _03GameHost(int port) {
       super("네프 메인 게임 화면 구성");
@@ -271,7 +267,7 @@ public class _03GameHost extends JFrame {
 		
 	    if (allUsersReady) {
 	        s_button.setEnabled(true);
-	        broadcastMessage("AllReady");
+//	        broadcastMessage("AllReady");
 	    }
 	}
 
@@ -280,6 +276,7 @@ public class _03GameHost extends JFrame {
 		secretAnswer = JOptionPane.showInputDialog(null, "정답을 입력하세요.");
 
 		if (secretAnswer != null && !secretAnswer.isEmpty()) {
+			secretAnswer = secretAnswer.trim(); // 정답에서 양 끝의 공백 제거
 			s_button.setEnabled(false);
 			handleHintInput();
 		} else {
@@ -349,29 +346,6 @@ public class _03GameHost extends JFrame {
 	    t_userAnswerDisplay.setCaretPosition(t_userAnswerDisplay.getDocument().getLength());
 	}
 	   
-   
-   // // (3)_2 실행자가 입력한 단어 출력
-   private void processAnswer() {
-      if (secretAnswer != null && !secretAnswer.isEmpty()) {
-         String participantAnswer = t_input.getText(); // 사용자가 입력한 정답
-         checkAnswer(participantAnswer);
-         user_answer_Display("사용자 입력: " + participantAnswer); // 사용자 입력을 JTextArea에 출력
-      } else {
-         user_answer_Display("정답이 설정되지 않았습니다."); // JTextArea에 출력
-      }
-
-   }
-
-
-   public void checkAnswer(String userAnswer) {
-      if (userAnswer.equalsIgnoreCase(secretAnswer)) {
-         user_answer_Display("정답입니다!"); // 화면에 정답 메시지 출력
-      } else {
-         user_answer_Display("오답입니다."); // 화면에 오답 메시지 출력
-         answers.add(userAnswer); // 오답일 경우 리스트에 추가 (선택사항)
-      }
-
-   }
    
    public void setSecretAnswer(String answer) {
       this.secretAnswer = answer;
@@ -467,8 +441,13 @@ public class _03GameHost extends JFrame {
               String message;
 
               while ((message = in.readLine()) != null) {
-                  if (message.equals("AllReady")) {
+                  if (message.startsWith("ANSWER:")) {
+                      String userAnswer = message.substring("ANSWER:".length());
+                      checkAnswer(userAnswer);
+                  } else if (message.equals("AllReady")) {
                       setUserReady(users.size() - 1, true);
+                      s_button.setEnabled(true);
+//                      broadcastMessage("AllReady");
                   }
                   broadcasting(message);
                   
@@ -490,8 +469,8 @@ public class _03GameHost extends JFrame {
     	        userReadyList.set(userCount, isReady);
     	        allUsersReady = userReadyList.stream().allMatch(Boolean::valueOf);
 
-    	        // 클라이언트에게 모든 유저의 준비 상태를 알리는 메시지 전송
-    	        sendToAllClients("ReadyStatus:" + allUsersReady);
+//    	        // 클라이언트에게 모든 유저의 준비 상태를 알리는 메시지 전송
+//    	        sendToAllClients("ReadyStatus:" + allUsersReady);
 
     	        if (allUsersReady) {
     	            s_button.setEnabled(true);
@@ -499,8 +478,6 @@ public class _03GameHost extends JFrame {
     	        }
     	    }
     	}
-
-      
 
       private void sendMessage(String message) {
           try {
@@ -519,6 +496,31 @@ public class _03GameHost extends JFrame {
               System.err.println("클라이언트 힌트 전송 오류: " + e.getMessage());
           }
       }
+      
+      private void checkAnswer(String userAnswer) {
+    	    if (secretAnswer != null && secretAnswer.trim().equalsIgnoreCase(userAnswer.trim())) {
+    	        // 정답일 경우
+    	        printUserAnswerDisplay("정답을 맞췄습니다: " + userAnswer);
+    	        stopGame(); // 게임 종료 시 처리
+    	    } else {
+    	        printUserAnswerDisplay("틀렸습니다: " + userAnswer);
+    	    }
+    	}
+
+      
+      private void stopGame() {
+    	    // 여기에 게임 종료 시 추가로 해야할 작업을 수행하세요.
+    	    // 예를 들어, 게임 리셋, 스코어 보드 업데이트 등
+
+    	    // 타이머 정지
+    	    if (timer != null && timer.isRunning()) {
+    	        timer.stop();
+    	    }
+
+    	    // 버튼 비활성화
+    	    s_button.setEnabled(false);
+    	}
+      
 
       private void broadcasting(String message) {
           for (ClientHandler c : users) {
