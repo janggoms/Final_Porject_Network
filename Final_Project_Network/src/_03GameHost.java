@@ -8,6 +8,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -40,7 +41,7 @@ public class _03GameHost extends JFrame {
 
    private JLabel labelAnswerLogo, timerLabel, remainingTurnsLabel;
    private JTextArea userInfoDisplay, rulesTextArea, t_userAnswerDisplay;
-   private JButton s_button;
+   private JButton s_button, e_button;
    private String secretAnswer, hint;
 
    private JScrollPane scrollPane;
@@ -143,10 +144,17 @@ public class _03GameHost extends JFrame {
       JPanel third = new JPanel();
       third.setLayout(new BorderLayout());
 
-      labelAnswerLogo = new JLabel("정답 정보");
-      labelAnswerLogo.setFont(new Font("NamunGothic", Font.ITALIC, 30));
-      labelAnswerLogo.setHorizontalAlignment(SwingConstants.CENTER);
-      labelAnswerLogo.setPreferredSize(new Dimension(150, 40));
+//      labelAnswerLogo = new JLabel("정답 정보");
+//      labelAnswerLogo.setFont(new Font("NamunGothic", Font.ITALIC, 30));
+//      labelAnswerLogo.setHorizontalAlignment(SwingConstants.CENTER);
+//      labelAnswerLogo.setPreferredSize(new Dimension(150, 40));
+      
+      e_button = new JButton("종료하기");
+      e_button.setEnabled(false);
+      e_button.setPreferredSize(new Dimension(e_button.getPreferredSize().width, 40));
+      e_button.addActionListener((ActionEvent e) -> {
+     	 _04GameOver gameOver = new _04GameOver();
+      });
 
       s_button = new JButton("시작하기");
       s_button.setPreferredSize(new Dimension(s_button.getPreferredSize().width, 40));
@@ -154,7 +162,7 @@ public class _03GameHost extends JFrame {
       JPanel userAnswerPanel = user_answer_Display(hint);
       third.add(userAnswerPanel, BorderLayout.CENTER);
       third.add(s_button, BorderLayout.SOUTH);
-      third.add(labelAnswerLogo, BorderLayout.NORTH);
+      third.add(e_button, BorderLayout.NORTH);
 
       return third;
    }
@@ -323,6 +331,7 @@ public class _03GameHost extends JFrame {
 			JOptionPane.showMessageDialog(null, "더 이상 힌트 입력 기회가 없습니다.");
 			s_button.setEnabled(false);
 	        broadcastMessage("STOP_GAME");
+	        e_button.setEnabled(true);
 		} else {
 			handleHintInput();
 		}
@@ -503,6 +512,7 @@ public class _03GameHost extends JFrame {
               printUserAnswerDisplay("정답을 맞췄습니다!");
               stopGame();
               broadcastMessage("STOP_GAME");
+  	          e_button.setEnabled(true);
           } else {
               printUserAnswerDisplay("유저가 답을 맞추지 못했습니다.");
           }

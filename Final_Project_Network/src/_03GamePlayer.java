@@ -43,7 +43,7 @@ public class _03GamePlayer extends JFrame {
 
    private JLabel labelAnswerLogo, timerLabel, remainingTurnsLabel;
    private JTextArea userInfoDisplay, t_userAnswerDisplay, rulesTextArea;
-   private JButton b_send, r_button;
+   private JButton b_send, r_button, e_button;
    private String secretAnswer;
 
    private JTextField t_input;
@@ -150,11 +150,18 @@ public class _03GamePlayer extends JFrame {
          JPanel third = new JPanel();
          third.setLayout(new BorderLayout());
 
-         labelAnswerLogo = new JLabel("정답 정보");
-         labelAnswerLogo.setFont(new Font("NamunGothic", Font.ITALIC, 30));
-         labelAnswerLogo.setHorizontalAlignment(SwingConstants.CENTER);
-         labelAnswerLogo.setPreferredSize(new Dimension(150, 40));
-         labelAnswerLogo.setEnabled(false);
+//         labelAnswerLogo = new JLabel("정답 정보");
+//         labelAnswerLogo.setFont(new Font("NamunGothic", Font.ITALIC, 30));
+//         labelAnswerLogo.setHorizontalAlignment(SwingConstants.CENTER);
+//         labelAnswerLogo.setPreferredSize(new Dimension(150, 40));
+//         labelAnswerLogo.setEnabled(false);
+         
+         e_button = new JButton("종료하기");
+         e_button.setEnabled(false);
+         e_button.setPreferredSize(new Dimension(e_button.getPreferredSize().width, 40));
+         e_button.addActionListener((ActionEvent e) -> {
+        	 _04GameOver gameOver = new _04GameOver();
+         });
 
          r_button = new JButton("준비하기");
          r_button.setEnabled(true);
@@ -174,7 +181,7 @@ public class _03GamePlayer extends JFrame {
 
          third.add(userAnswerPanel, BorderLayout.CENTER);
          third.add(r_button, BorderLayout.SOUTH);
-         third.add(labelAnswerLogo, BorderLayout.NORTH);
+         third.add(e_button, BorderLayout.NORTH);
 
          return third;
       }
@@ -232,6 +239,7 @@ public class _03GamePlayer extends JFrame {
 		if (remainingTurns1 == 0) {
 			r_button.setEnabled(false); // 힌트 입력 기회가 없을 때 버튼 비활성화
 			stopGame();
+			e_button.setEnabled(true);
 		}
 
 	}
@@ -485,9 +493,8 @@ public class _03GamePlayer extends JFrame {
 	                stopGame();
 		            printUserAnswerDisplay("정답을 맞췄습니다!");
 		            printUserAnswerDisplay("게임을 종료합니다.");
-	            } else if (inMsg.equals("NEXT_HINT")) {
-	                
-	            } else {
+		            e_button.setEnabled(true);
+	            }  else {
 	                printUserAnswerDisplay(inMsg);
 	            }
 	        }
