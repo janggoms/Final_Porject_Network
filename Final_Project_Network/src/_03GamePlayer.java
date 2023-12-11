@@ -440,9 +440,7 @@ public class _03GamePlayer extends JFrame {
 	            printUserAnswerDisplay("정답을 맞췄습니다!");
 	            sendMessageToServer("ANSWER_CORRECT");
 
-	            // Stop the timer when the correct answer is provided
-	            if (timer != null && timer.isRunning()) {
-	                timer.stop();
+	            stopGame();
 	            }
 	        } else {
 	            // Incorrect Answer
@@ -450,6 +448,15 @@ public class _03GamePlayer extends JFrame {
 	            sendMessageToServer("ANSWER_INCORRECT");
 	        }
 	    }
+   
+   private void stopGame() {
+	    // 타이머 정지
+	    if (timer != null && timer.isRunning()) {
+	        timer.stop();
+	    }
+	    // 버튼 비활성화
+	    t_input.setEnabled(false);
+	    b_send.setEnabled(false);
 	}
 
 

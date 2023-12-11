@@ -447,14 +447,12 @@ public class _03GameHost extends JFrame {
                   } else if (message.equals("AllReady")) {
                       setUserReady(users.size() - 1, true);
                       s_button.setEnabled(true);
-//                      broadcastMessage("AllReady");
                   } else if (message.startsWith("SecretAnswer:")) {
                       String secretAnswerFromServer = message.substring("SecretAnswer:".length());
-                      // Set the secret answer on the client side
                       setSecretAnswer(secretAnswerFromServer);
                   }
                   broadcasting(message);
-                  
+          
                   if (message.startsWith(USER_JOINED_MESSAGE)) {
                       message.substring(USER_JOINED_MESSAGE.length());
                     } else {
@@ -472,9 +470,6 @@ public class _03GameHost extends JFrame {
     	    if (userCount >= 0 && userCount < userReadyList.size()) {
     	        userReadyList.set(userCount, isReady);
     	        allUsersReady = userReadyList.stream().allMatch(Boolean::valueOf);
-
-//    	        // 클라이언트에게 모든 유저의 준비 상태를 알리는 메시지 전송
-//    	        sendToAllClients("ReadyStatus:" + allUsersReady);
 
     	        if (allUsersReady) {
     	            s_button.setEnabled(true);
@@ -505,7 +500,7 @@ public class _03GameHost extends JFrame {
     	    if (secretAnswer != null && secretAnswer.trim().equalsIgnoreCase(userAnswer.trim())) {
     	        // 정답일 경우
     	        printUserAnswerDisplay("정답을 맞췄습니다: " + userAnswer);
-    	        stopGame(); // 게임 종료 시 처리
+    	        stopGame();
     	    } else {
     	        printUserAnswerDisplay("틀렸습니다: " + userAnswer);
     	    }
@@ -513,14 +508,10 @@ public class _03GameHost extends JFrame {
 
       
       private void stopGame() {
-    	    // 여기에 게임 종료 시 추가로 해야할 작업을 수행하세요.
-    	    // 예를 들어, 게임 리셋, 스코어 보드 업데이트 등
-
     	    // 타이머 정지
     	    if (timer != null && timer.isRunning()) {
     	        timer.stop();
     	    }
-
     	    // 버튼 비활성화
     	    s_button.setEnabled(false);
     	}
