@@ -24,8 +24,8 @@ public class _02Room extends JFrame {
 	private JButton c_room, e_room; // 방생성, 방입장
 	private JLabel label; // 표시
 	private JTextField roomName; // 방생성 입력란
-	private String[] names = { " 5", " 7", "10", "15", "20" };
-	private int userCount = 0;
+	private String[] names = { " 5", " 7", "10", "15", "20" }; // 횟수 종류 선택지
+	private int userCount = 0; // 유저 입장 순서
 
 	private List<JButton> roomButtons = new ArrayList<>(); // 생성된 방 버튼을 관리
 
@@ -57,9 +57,10 @@ public class _02Room extends JFrame {
 	}
 
 
+	// 생성된 방 표시 공간
 	private JPanel firstDisplay() {
 		JPanel p = new JPanel();
-		p.setBounds(0, 0, 700, 700); // 첫 번째 패널 위치 및 크기 설정
+		p.setBounds(0, 0, 700, 700);
 		p.setLayout(null);
 
 		label = new JLabel("현재 생성된 방");
@@ -71,6 +72,7 @@ public class _02Room extends JFrame {
 	}
 
 
+	// 방 생성하는 공간
 	private JPanel secondDisplay() {
 		JPanel p = new JPanel();
 		p.setBounds(700, 0, 300, 700);
@@ -127,7 +129,6 @@ public class _02Room extends JFrame {
 
 				gameHost.setRemainingTurns(remainingTurns);
 				gameHost.setVisible(true);
-				// dispose();
 			}
 		});
 
@@ -174,7 +175,6 @@ public class _02Room extends JFrame {
 					_03GamePlayer gamePlayer = new _03GamePlayer(serverAddress, port);
 					gamePlayer.setRemainingTurns(remainingTurns);
 					gamePlayer.setVisible(true);
-					// dispose();
 				}
 			});
 		}

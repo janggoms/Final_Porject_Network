@@ -1,5 +1,5 @@
 // 게임 출제자 클래스
-// 질문을 보내는 사람이며, 정답을 맞출 수 없다.
+// 힌트를 보내는 사람이며, 정답을 맞출 수 없다.
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -40,24 +40,22 @@ public class _03GameHost extends JFrame {
 	private Thread acceptThread = null;
 	private Vector<ClientHandler> users = new Vector<ClientHandler>();
 
-	private JLabel labelAnswerLogo, timerLabel, remainingTurnsLabel;
+	private JLabel timerLabel, remainingTurnsLabel;
 	private JTextArea userInfoDisplay, rulesTextArea, t_userAnswerDisplay;
 	private JButton s_button, e_button;
 	private String secretAnswer, hint;
 
 	private JScrollPane scrollPane;
-	private Timer timer;
 
 	private List<Boolean> userReadyList = new ArrayList<>(); // 유저들의 준비 여부를 저장하는 리스트 추가
 	private boolean allUsersReady = false;
-
 	private List<ClientHandler> clientHandlers = new ArrayList<>();
 	private static final String USER_JOINED_MESSAGE = "새로운 User 입장: ";
 
 	private boolean timerStarted = false;
-
 	private int remainingTurns1;
 	private static int userCount = 0;
+	private Timer timer;
 
 
 	public _03GameHost(int port) {
@@ -113,6 +111,7 @@ public class _03GameHost extends JFrame {
 	}
 
 
+	// (1) 로고랑 유저 목록 표시 화면
 	private JPanel first_Display() {
 		JPanel first = new JPanel();
 		first.setLayout(new BorderLayout());
@@ -147,11 +146,6 @@ public class _03GameHost extends JFrame {
 	private JPanel third_Display() {
 		JPanel third = new JPanel();
 		third.setLayout(new BorderLayout());
-
-		// labelAnswerLogo = new JLabel("정답 정보");
-		// labelAnswerLogo.setFont(new Font("NamunGothic", Font.ITALIC, 30));
-		// labelAnswerLogo.setHorizontalAlignment(SwingConstants.CENTER);
-		// labelAnswerLogo.setPreferredSize(new Dimension(150, 40));
 
 		e_button = new JButton("종료하기");
 		e_button.setEnabled(false);
@@ -254,6 +248,7 @@ public class _03GameHost extends JFrame {
 	}
 
 
+	// 남은 횟수 감소 기능
 	public void setRemainingTurns(String value) {
 		value.trim();
 		remainingTurns1 = Integer.parseInt(value.trim());
@@ -290,7 +285,7 @@ public class _03GameHost extends JFrame {
 		secretAnswer = JOptionPane.showInputDialog(null, "정답을 입력하세요.");
 
 		if (secretAnswer != null && !secretAnswer.isEmpty()) {
-			secretAnswer = secretAnswer.trim(); // 정답에서 양 끝의 공백 제거
+			secretAnswer = secretAnswer.trim();
 			s_button.setEnabled(false);
 			handleHintInput();
 		} else {
@@ -313,6 +308,7 @@ public class _03GameHost extends JFrame {
 	}
 
 
+	// 타이머 기능
 	private void startTurnTimer() {
 		remainingTurns1--;
 		remainingTurnsLabel.setText("남은 횟수: " + remainingTurns1);
@@ -434,15 +430,12 @@ public class _03GameHost extends JFrame {
 						BufferedWriter out = new BufferedWriter(
 						    new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"));
 						ClientHandler cHandler = new ClientHandler(clientSocket, out);
+
 						users.add(cHandler); // 클라이언트 핸들러 목록에 추가
 						clientHandlers.add(cHandler);
 						cHandler.start();
 
-						sendToAllClients(USER_JOINED_MESSAGE + "User" + userCount + "가 연결되었습니다."); // 모든
-						                                                                           // 클라이언트에게
-						                                                                           // 메시지
-						                                                                           // 전송
-
+						sendToAllClients(USER_JOINED_MESSAGE + "User" + userCount + "가 연결되었습니다.");
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -498,7 +491,6 @@ public class _03GameHost extends JFrame {
 					if (message.startsWith(USER_JOINED_MESSAGE)) {
 						message.substring(USER_JOINED_MESSAGE.length());
 					} else {
-						// 기존 클라이언트의 메시지인 경우
 						printUserAnswerDisplay(message);
 					}
 
@@ -551,7 +543,6 @@ public class _03GameHost extends JFrame {
 
 		private void checkAnswer(String userAnswer) {
 			if (secretAnswer != null && secretAnswer.trim().equalsIgnoreCase(userAnswer.trim())) {
-				// 정답일 경우
 				printUserAnswerDisplay("정답을 맞췄습니다!");
 				stopGame();
 				broadcastMessage("STOP_GAME");
@@ -564,12 +555,10 @@ public class _03GameHost extends JFrame {
 
 
 		private void stopGame() {
-			// 타이머 정지
 			if (timer != null && timer.isRunning()) {
 				timer.stop();
 			}
 
-			// 버튼 비활성화
 			s_button.setEnabled(false);
 		}
 
@@ -594,7 +583,7 @@ public class _03GameHost extends JFrame {
 
 		SwingUtilities.invokeLater(() -> {
 			_03GameHost server = new _03GameHost(port);
-			server.startServer(); // 서버 시작 메서드 호출
+			server.startServer();
 		});
 	}
 

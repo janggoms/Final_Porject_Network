@@ -59,7 +59,7 @@ public class _04GameOver extends JFrame {
 	}
 
 
-	// 최종결과가 뜨는 화면
+	// GAMEOVER 문구가 뜨는 화면
 	private JPanel first_Display() {
 		JPanel first = new JPanel(null);
 
@@ -86,7 +86,7 @@ public class _04GameOver extends JFrame {
 				int serverPort = 54321;
 				_03GamePlayer playerFrame = new _03GamePlayer("localhost", serverPort);
 				playerFrame.setVisible(true);
-				dispose();
+				dispose(); // 현재의 프레임을 닫습니다.
 			}
 		});
 		b_exit = new JButton("종료하기");

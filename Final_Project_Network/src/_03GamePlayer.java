@@ -1,4 +1,6 @@
+
 // 게임 실행자 클래스
+// 정답을 맞추는 사람으로 힌트 입력 불가
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -40,28 +42,24 @@ public class _03GamePlayer extends JFrame {
 
 	private String serverAddress;
 	private int serverPort;
-
-	private JLabel labelAnswerLogo, timerLabel, remainingTurnsLabel;
-	private JTextArea userInfoDisplay, t_userAnswerDisplay, rulesTextArea;
-	private JButton b_send, r_button, e_button;
-	private String secretAnswer;
-
-	private JTextField t_input;
-	private JScrollPane scrollPane;
-	private Timer timer;
-
-	private List<Boolean> userReadyList = new ArrayList<>(); // 유저들의 준비 여부를 저장하는 리스트 추가
-
-	private static int userCount = 1;
-	private int remainingTurns1;
-
 	private Socket socket;
 	private Writer out;
 	private Reader in;
-
 	private Thread receiveThread = null;
 
+	private JLabel timerLabel, remainingTurnsLabel;
+	private JTextArea userInfoDisplay, t_userAnswerDisplay, rulesTextArea;
+	private JButton b_send, r_button, e_button;
+	private String secretAnswer;
+	private JTextField t_input;
+	private JScrollPane scrollPane;
+
+	private List<Boolean> userReadyList = new ArrayList<>(); // 유저들의 준비 여부를 저장하는 리스트 추가
 	private boolean isReady = false;
+
+	private static int userCount = 1;
+	private int remainingTurns1;
+	private Timer timer;
 
 
 	public _03GamePlayer(String serverAddress, int serverPort) {
@@ -114,6 +112,7 @@ public class _03GamePlayer extends JFrame {
 	}
 
 
+	// (1) 로고랑 유저 목록 표시 화면
 	private JPanel first_Display() {
 		JPanel first = new JPanel();
 		first.setLayout(new BorderLayout());
@@ -147,15 +146,10 @@ public class _03GamePlayer extends JFrame {
 	}
 
 
+	// (3) 유저 정답 입력 표시창
 	private JPanel third_Display() {
 		JPanel third = new JPanel();
 		third.setLayout(new BorderLayout());
-
-		// labelAnswerLogo = new JLabel("정답 정보");
-		// labelAnswerLogo.setFont(new Font("NamunGothic", Font.ITALIC, 30));
-		// labelAnswerLogo.setHorizontalAlignment(SwingConstants.CENTER);
-		// labelAnswerLogo.setPreferredSize(new Dimension(150, 40));
-		// labelAnswerLogo.setEnabled(false);
 
 		e_button = new JButton("종료하기");
 		e_button.setEnabled(false);
@@ -190,6 +184,7 @@ public class _03GamePlayer extends JFrame {
 	}
 
 
+	// 타이머 공간 지정
 	private JPanel timerPanel() {
 		JPanel p = new JPanel(new BorderLayout());
 
@@ -209,8 +204,8 @@ public class _03GamePlayer extends JFrame {
 	}
 
 
+	// 타이머 작동 기능
 	private void startTimer() {
-		// 남은 횟수 감소
 		remainingTurns1--;
 		remainingTurnsLabel.setText("남은 횟수: " + remainingTurns1);
 
@@ -338,6 +333,7 @@ public class _03GamePlayer extends JFrame {
 	}
 
 
+	// 남은 횟수 감소 기능
 	public void setRemainingTurns(String value) {
 		value.trim();
 		remainingTurns1 = Integer.parseInt(value.trim());
@@ -435,7 +431,6 @@ public class _03GamePlayer extends JFrame {
 
 		if (isReady && remainingTurns1 > 0) {
 			checkAnswer(userAnswer);
-			// 정답을 서버로 전송
 			sendMessageToServer("ANSWER:" + userAnswer);
 		}
 
@@ -444,7 +439,7 @@ public class _03GamePlayer extends JFrame {
 				((BufferedWriter) out).write(message);
 				out.flush();
 				t_input.setEnabled(false);
-				b_send.setEnabled(false); // 메시지를 전송한 후 버튼 비활성화
+				b_send.setEnabled(false);
 			} catch (IOException e) {
 				System.err.println("클라이언트 메시지 전송 오류> " + e.getMessage());
 			}
@@ -473,12 +468,10 @@ public class _03GamePlayer extends JFrame {
 
 
 	private void stopGame() {
-		// 타이머 정지
 		if (timer != null && timer.isRunning()) {
 			timer.stop();
 		}
 
-		// 버튼 비활성화
 		t_input.setEnabled(false);
 		b_send.setEnabled(false);
 	}
@@ -500,10 +493,8 @@ public class _03GamePlayer extends JFrame {
 			String inMsg = ((BufferedReader) in).readLine();
 			if (inMsg != null) {
 				if (inMsg.startsWith("SecretAnswer")) {
-					// Extract the secret answer from the message
 					String secretAnswerFromServer = inMsg.substring("SecretAnswer".length());
 
-					// Set the secret answer in the client
 					setSecretAnswer(secretAnswerFromServer);
 				} else if (inMsg.startsWith("HINT:")) {
 					String hint = inMsg.substring(5);
@@ -550,8 +541,8 @@ public class _03GamePlayer extends JFrame {
 
 
 	public static void main(String[] args) {
-		String serverAddress = "localhost"; // 또는 서버의 IP 주소
-		int serverPort = 54321; // 서버가 사용하는 포트 번호
+		String serverAddress = "localhost";
+		int serverPort = 54321;
 
 		SwingUtilities.invokeLater(() -> {
 		    new _03GamePlayer(serverAddress, serverPort);
