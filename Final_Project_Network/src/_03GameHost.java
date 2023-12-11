@@ -313,7 +313,7 @@ public class _03GameHost extends JFrame {
 		remainingTurns1--;
 		remainingTurnsLabel.setText("남은 횟수: " + remainingTurns1);
 
-		timerLabel.setText("10");
+		timerLabel.setText("15");
 		timer = new Timer(1000, ev -> {
 			int remainingTime = Integer.parseInt(timerLabel.getText());
 			if (remainingTime > 0) {

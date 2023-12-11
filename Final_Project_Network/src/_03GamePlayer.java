@@ -209,7 +209,7 @@ public class _03GamePlayer extends JFrame {
 		remainingTurns1--;
 		remainingTurnsLabel.setText("남은 횟수: " + remainingTurns1);
 
-		timerLabel.setText("10"); // 시작할 타이머 초기 값 (여기서는 10으로 설정되었습니다)
+		timerLabel.setText("15"); // 시작할 타이머 초기 값
 
 		if (remainingTurns1 > 0) {
 			b_send.setEnabled(true);
