@@ -257,8 +257,7 @@ public class _03GameHost extends JFrame {
 	    if (!timerStarted && remainingTurns1 > 0) {
 	        if (secretAnswer == null || secretAnswer.isEmpty()) {
 	            handleSecretAnswerInput();
-	            // Send the secret answer to all clients
-	            broadcastMessage("SecretAnswer:" + secretAnswer);
+	            broadcastMessage("SecretAnswer");
 	        } else {
 	            handleHintInput();
 	        }
@@ -323,6 +322,7 @@ public class _03GameHost extends JFrame {
 		if (remainingTurns1 == 0) {
 			JOptionPane.showMessageDialog(null, "더 이상 힌트 입력 기회가 없습니다.");
 			s_button.setEnabled(false);
+	        broadcastMessage("STOP_GAME");
 		} else {
 			handleHintInput();
 		}
@@ -417,6 +417,7 @@ public class _03GameHost extends JFrame {
 				}
 			});
 			acceptThread.start();
+			t_userAnswerDisplay.setText("");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -430,7 +431,7 @@ public class _03GameHost extends JFrame {
       public ClientHandler(Socket clientSocket, BufferedWriter out) {
           this.clientSocket = clientSocket;
           this.out = out;
-          setUserReady(users.size() - 1, false);
+          setUserReady(users.size(), false);
       }
       
       private void receiveMessages(Socket clientSocket) {
@@ -445,10 +446,10 @@ public class _03GameHost extends JFrame {
                       String userAnswer = message.substring("ANSWER:".length());
                       checkAnswer(userAnswer);
                   } else if (message.equals("AllReady")) {
-                      setUserReady(users.size() - 1, true);
+                      setUserReady(users.size(), true);
                       s_button.setEnabled(true);
                   } else if (message.startsWith("SecretAnswer:")) {
-                      String secretAnswerFromServer = message.substring("SecretAnswer:".length());
+                      String secretAnswerFromServer = message.substring("SecretAnswer".length());
                       setSecretAnswer(secretAnswerFromServer);
                   }
                   broadcasting(message);
@@ -497,14 +498,15 @@ public class _03GameHost extends JFrame {
       }
       
       private void checkAnswer(String userAnswer) {
-    	    if (secretAnswer != null && secretAnswer.trim().equalsIgnoreCase(userAnswer.trim())) {
-    	        // 정답일 경우
-    	        printUserAnswerDisplay("정답을 맞췄습니다: " + userAnswer);
-    	        stopGame();
-    	    } else {
-    	        printUserAnswerDisplay("틀렸습니다: " + userAnswer);
-    	    }
-    	}
+          if (secretAnswer != null && secretAnswer.trim().equalsIgnoreCase(userAnswer.trim())) {
+              // 정답일 경우
+              printUserAnswerDisplay("정답을 맞췄습니다!");
+              stopGame();
+              broadcastMessage("STOP_GAME");
+          } else {
+              printUserAnswerDisplay("유저가 답을 맞추지 못했습니다.");
+          }
+      }
 
       
       private void stopGame() {

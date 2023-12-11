@@ -162,12 +162,12 @@ public class _03GamePlayer extends JFrame {
          r_button.addActionListener(e -> {
         	    _03GameHost gameFrame = getGameFrame();
         	    if (gameFrame != null && !isReady) {
-        	        setUserReady(userCount - 1, true);
+        	        setUserReady(userCount, true);
         	        r_button.setEnabled(false);
         	        isReady = true;
         	        sendMessageToServerIfAllReady();
         	    }
-        	    rulesTextArea.setText(""); // Clear the rules content
+        	    rulesTextArea.setText("");
         	});
 
          JPanel userAnswerPanel = user_answer_Display();
@@ -230,10 +230,8 @@ public class _03GamePlayer extends JFrame {
 	
 	private void handleTimerEnd() {
 		if (remainingTurns1 == 0) {
-			JOptionPane.showMessageDialog(null, "더 이상 힌트 입력 기회가 없습니다.");
 			r_button.setEnabled(false); // 힌트 입력 기회가 없을 때 버튼 비활성화
-		} else {
-			// handleHintInput(); // 힌트 입력 기회가 남았을 때 처리할 내용 (여기서는 힌트 입력 로직 호출)
+			stopGame();
 		}
 
 	}
@@ -365,9 +363,7 @@ public class _03GamePlayer extends JFrame {
 	    }
 	}
 
- 
-
-
+   
    class ImagePanel extends JPanel {
       private ImageIcon imageIcon;
 
@@ -411,10 +407,11 @@ public class _03GamePlayer extends JFrame {
 
 
    private void sendMessage() {
+       
 	    String userAnswer = t_input.getText().trim();
-	    String message = "User" + userCount + ": " + userAnswer + "\n";
+	    String message = "User: " + userAnswer + "\n";
 
-	    if (isReady) {
+	    if (isReady && remainingTurns1 > 0) {
 	        checkAnswer(userAnswer);
 	        // 정답을 서버로 전송
 	        sendMessageToServer("ANSWER:" + userAnswer);
@@ -436,14 +433,12 @@ public class _03GamePlayer extends JFrame {
    private void checkAnswer(String userAnswer) {
 	    if (isReady && secretAnswer != null) {
 	        if (userAnswer != null && userAnswer.trim().equalsIgnoreCase(secretAnswer.trim())) {
-	            // Correct Answer
 	            printUserAnswerDisplay("정답을 맞췄습니다!");
 	            sendMessageToServer("ANSWER_CORRECT");
 
 	            stopGame();
 	            }
 	        } else {
-	            // Incorrect Answer
 	            printUserAnswerDisplay("틀렸습니다. 다시 시도하세요.");
 	            sendMessageToServer("ANSWER_INCORRECT");
 	        }
@@ -465,13 +460,6 @@ public class _03GamePlayer extends JFrame {
 	    try {
 	        ((BufferedWriter) out).write(message + "\n");
 	        out.flush();
-
-	        // Optionally handle different message types here
-	        if (message.equals("ANSWER_CORRECT")) {
-	            // Handle correct answer logic if needed
-	        } else if (message.equals("ANSWER_INCORRECT")) {
-	            // Handle incorrect answer logic if needed
-	        }
 	    } catch (IOException e) {
 	        System.err.println("클라이언트 메시지 전송 오류> " + e.getMessage());
 	    }
@@ -483,9 +471,9 @@ public class _03GamePlayer extends JFrame {
 	    try {
 	        String inMsg = ((BufferedReader) in).readLine();
 	        if (inMsg != null) {
-	            if (inMsg.startsWith("SecretAnswer:")) {
+	            if (inMsg.startsWith("SecretAnswer")) {
 	                // Extract the secret answer from the message
-	                String secretAnswerFromServer = inMsg.substring("SecretAnswer:".length());
+	                String secretAnswerFromServer = inMsg.substring("SecretAnswer".length());
 
 	                // Set the secret answer in the client
 	                setSecretAnswer(secretAnswerFromServer);
@@ -493,6 +481,12 @@ public class _03GamePlayer extends JFrame {
 	                String hint = inMsg.substring(5);
 	                printHintDisplay("HINT:" + hint);
 	                startTimer();
+	            } else if (inMsg.equals("STOP_GAME")) {
+	                stopGame();
+		            printUserAnswerDisplay("정답을 맞췄습니다!");
+		            printUserAnswerDisplay("게임을 종료합니다.");
+	            } else if (inMsg.equals("NEXT_HINT")) {
+	                
 	            } else {
 	                printUserAnswerDisplay(inMsg);
 	            }
