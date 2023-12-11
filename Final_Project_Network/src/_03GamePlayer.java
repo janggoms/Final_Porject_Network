@@ -346,9 +346,9 @@ public class _03GamePlayer extends JFrame {
 
 	}
 	
-	public void setSecretAnswer(String answer) {
-         this.secretAnswer = answer;
-      }
+	public void setSecretAnswer(String secretAnswer) {
+	    this.secretAnswer = secretAnswer;
+	}
 
 
    public void setUserReady(int userCount, boolean isReady) {
@@ -434,32 +434,37 @@ public class _03GamePlayer extends JFrame {
 	}
    
    private void checkAnswer(String userAnswer) {
-//	    if (isReady) {
-	        if (userAnswer.equalsIgnoreCase(secretAnswer)) {
-	            // 정답을 맞췄을 때의 처리
+	    if (isReady && secretAnswer != null) {
+	        if (userAnswer != null && userAnswer.trim().equalsIgnoreCase(secretAnswer.trim())) {
+	            // Correct Answer
 	            printUserAnswerDisplay("정답을 맞췄습니다!");
-//	            sendMessageToServer("ANSWER_CORRECT");
-	            
-	            // 정답을 서버로 전송
 	            sendMessageToServer("ANSWER_CORRECT");
-	            
-	            // 여기에서 타이머를 멈춥니다.
+
+	            // Stop the timer when the correct answer is provided
 	            if (timer != null && timer.isRunning()) {
 	                timer.stop();
 	            }
 	        } else {
-	            // 틀렸을 때의 처리
+	            // Incorrect Answer
 	            printUserAnswerDisplay("틀렸습니다. 다시 시도하세요.");
-//	            sendMessageToServer("ANSWER_INCORRECT");
+	            sendMessageToServer("ANSWER_INCORRECT");
 	        }
-//	    }
+	    }
 	}
+
 
    
    private void sendMessageToServer(String message) {
 	    try {
 	        ((BufferedWriter) out).write(message + "\n");
 	        out.flush();
+
+	        // Optionally handle different message types here
+	        if (message.equals("ANSWER_CORRECT")) {
+	            // Handle correct answer logic if needed
+	        } else if (message.equals("ANSWER_INCORRECT")) {
+	            // Handle incorrect answer logic if needed
+	        }
 	    } catch (IOException e) {
 	        System.err.println("클라이언트 메시지 전송 오류> " + e.getMessage());
 	    }
@@ -467,23 +472,27 @@ public class _03GamePlayer extends JFrame {
 
    
    
-	private void receiveMessage() {
-		try {
-			String inMsg = ((BufferedReader) in).readLine();
-			if (inMsg != null) {
-				if (inMsg.startsWith("HINT:")) {
-					String hint = inMsg.substring(5); // "HINT:" 이후의 문자열을 힌트로 가져옵니다.
-					printHintDisplay("HINT:" + hint);
+   private void receiveMessage() {
+	    try {
+	        String inMsg = ((BufferedReader) in).readLine();
+	        if (inMsg != null) {
+	            if (inMsg.startsWith("SecretAnswer:")) {
+	                // Extract the secret answer from the message
+	                String secretAnswerFromServer = inMsg.substring("SecretAnswer:".length());
 
-					// 힌트를 받으면 타이머 시작
-					startTimer();
-				} else {
-					printUserAnswerDisplay(inMsg);
-				}
-			}
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, "클라이언트 일반 수신 오류> " + e.getMessage());
-		}
+	                // Set the secret answer in the client
+	                setSecretAnswer(secretAnswerFromServer);
+	            } else if (inMsg.startsWith("HINT:")) {
+	                String hint = inMsg.substring(5);
+	                printHintDisplay("HINT:" + hint);
+	                startTimer();
+	            } else {
+	                printUserAnswerDisplay(inMsg);
+	            }
+	        }
+	    } catch (IOException e) {
+	        JOptionPane.showMessageDialog(null, "클라이언트 일반 수신 오류> " + e.getMessage());
+	    }
 	}
    
 	// 기존 유저 정보를 초기화하지 않고, 새로운 유저 수만큼 추가

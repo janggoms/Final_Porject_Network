@@ -252,24 +252,25 @@ public class _03GameHost extends JFrame {
 
 
 	private void handleTurnStart() {
-		rulesTextArea.setText("");
-		t_userAnswerDisplay.setText("");
-		if (!timerStarted && remainingTurns1 > 0) {
-			if (secretAnswer == null || secretAnswer.isEmpty()) {
-				handleSecretAnswerInput();
-			} else {
-				handleHintInput();
-			}
+	    rulesTextArea.setText("");
+	    t_userAnswerDisplay.setText("");
+	    if (!timerStarted && remainingTurns1 > 0) {
+	        if (secretAnswer == null || secretAnswer.isEmpty()) {
+	            handleSecretAnswerInput();
+	            // Send the secret answer to all clients
+	            broadcastMessage("SecretAnswer:" + secretAnswer);
+	        } else {
+	            handleHintInput();
+	        }
+	    } else {
+	        JOptionPane.showMessageDialog(null, "이미 정답을 입력했거나 힌트를 모두 사용했습니다.");
+	    }
 
-		} else {
-			JOptionPane.showMessageDialog(null, "이미 정답을 입력했거나 힌트를 모두 사용했습니다.");
-		}
-		
 	    if (allUsersReady) {
 	        s_button.setEnabled(true);
-//	        broadcastMessage("AllReady");
 	    }
 	}
+
 
 
 	private void handleSecretAnswerInput() {
@@ -282,7 +283,6 @@ public class _03GameHost extends JFrame {
 		} else {
 			JOptionPane.showMessageDialog(null, "정답을 입력하세요.");
 		}
-
 	}
 
 
@@ -347,8 +347,8 @@ public class _03GameHost extends JFrame {
 	}
 	   
    
-   public void setSecretAnswer(String answer) {
-      this.secretAnswer = answer;
+   public void setSecretAnswer(String secretAnswer) {
+      this.secretAnswer = secretAnswer;
    }
    
    public void setHint(String hint) {
@@ -448,6 +448,10 @@ public class _03GameHost extends JFrame {
                       setUserReady(users.size() - 1, true);
                       s_button.setEnabled(true);
 //                      broadcastMessage("AllReady");
+                  } else if (message.startsWith("SecretAnswer:")) {
+                      String secretAnswerFromServer = message.substring("SecretAnswer:".length());
+                      // Set the secret answer on the client side
+                      setSecretAnswer(secretAnswerFromServer);
                   }
                   broadcasting(message);
                   
